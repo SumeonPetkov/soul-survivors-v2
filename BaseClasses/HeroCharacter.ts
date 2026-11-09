@@ -1,0 +1,135 @@
+// A playable hero: a Character with health, its own attack and an A-button ability.
+// Concrete heroes: `class X extends HeroCharacter implements ICharacterWithAbility`.
+abstract class HeroCharacter extends Character implements ICharacterWithAbility {
+    /** Auto-attack settings. Set these in the hero's constructor. */
+    attackName: string;
+    attackCooldown: number;
+
+    readonly description: string;
+    readonly abilityName: string;
+    readonly abilityCooldown: number;
+    abilityReadyAt: number;
+
+    imgR: Image;
+    imgL: Image;
+    faceRight: boolean;
+
+    constructor(characterId: string, name: string, img: string,
+        maxHp: number, speed: number,
+        abilityName: string, abilityCooldown: number, description: string) {
+        super(characterId, name, maxHp, speed, CharacterKind.Normal, getImage(img), SpriteKind.Player);
+        this.attackName = name;
+        this.attackCooldown = 500;
+        this.abilityName = abilityName;
+        this.abilityCooldown = abilityCooldown;
+        this.description = description;
+        this.abilityReadyAt = 0;
+        this.faceRight = true;
+        this.z = 10;
+        this.setHeroImage(this.image);
+    }
+
+    /** Text shown on the hero select menu. */
+    get menuTitle(): string {
+        let t = this.name.toUpperCase();
+        while (t.length < 8) t += " ";
+        return t + "HP" + this.maxHp;
+    }
+
+    /** Use for palette swaps etc. Keeps the left/right facing images in sync. */
+    protected setHeroImage(img: Image) {
+        this.imgR = img;
+        this.imgL = img.clone();
+        this.imgL.flipX();
+        this.setImage(this.faceRight ? this.imgR : this.imgL);
+    }
+
+    face(right: boolean) {
+        if (right == this.faceRight) return;
+        this.faceRight = right;
+        this.setImage(right ? this.imgR : this.imgL);
+    }
+
+    /** Gives the arrow keys control of the hero at its current speed. */
+    enableMovement() {
+        controller.moveSprite(this, this.speed, this.speed);
+    }
+
+    /** Called by the A button. Handles the cooldown, then runs the hero's ability. */
+    tryUseAbility(now: number): boolean {
+        if (now < this.abilityReadyAt) return false;
+        this.abilityReadyAt = now + this.abilityCooldown;
+        this.useAbility();
+        return true;
+    }
+
+    // ---- attack helpers for use inside attack() ----
+
+    /** Angle in radians from the hero to `target`. */
+    protected aimAt(target: Sprite): number {
+        return Math.atan2(target.y - this.y, target.x - this.x);
+    }
+
+    /**
+     * Fires one projectile. Damage is scaled by the Power upgrade.
+     * pierce: enemies it passes through, boom: 1 = explodes on hit, home: 1 = seeks enemies.
+     */
+    protected shoot(img: Image, angle: number, speed: number, damage: number, life: number,
+        pierce = 0, boom = 0, home = 0): Sprite {
+        const p = sprites.createProjectileFromSprite(img, this, Math.cos(angle) * speed, Math.sin(angle) * speed);
+        if (shotsIgnoreWalls) {
+            // firing at a flyer behind a wall: this volley flies over walls
+            p.setFlag(SpriteFlag.GhostThroughWalls, true);
+            setDN(p, "ghost", 1);
+        } else {
+            p.setFlag(SpriteFlag.DestroyOnWall, true);
+        }
+        p.lifespan = life;
+        setDN(p, "dmg", damage * player.dmgMult);
+        setDN(p, "pierce", pierce);
+        setDN(p, "boom", boom);
+        setDN(p, "home", home);
+        setDN(p, "last", -1);
+        setDN(p, "spd", speed);
+        return p;
+    }
+
+    /**
+     * Fires `count` projectiles fanned over `spread` radians, plus the Multishot
+     * upgrade and extraBullets(). `jitter` adds random inaccuracy per shot.
+     */
+    protected shootSpread(img: Image, angle: number, count: number, spread: number, jitter: number,
+        speed: number, damage: number, life: number, pierce = 0, boom = 0, home = 0) {
+        const n = count + player.multishot + this.extraBullets();
+        const sp = spread + 0.14 * (n - count);
+        for (let i = 0; i < n; i++) {
+            let a = angle;
+            if (n > 1) a += -sp / 2 + sp * i / (n - 1);
+            a += (Math.random() - 0.5) * jitter * 2;
+            this.shoot(img, a, speed, damage, life, pierce, boom, home);
+        }
+    }
+
+    // ---- hooks heroes can override (optional) ----
+
+    /** Runs every frame while the game is playing. */
+    update(dt: number): void { }
+    /** Extra bullets added to every volley. */
+    extraBullets(): number { return 0; }
+    /** Multiplies fire rate (2 = twice as fast). */
+    fireRateMult(): number { return 1; }
+
+    // ---- required (enforced by ICharacterWithAbility on the concrete class) ----
+
+    attack(target: Sprite): void {
+        throw "attack() not implemented in " + this.name;
+    }
+
+    useAbility(): void {
+        throw "useAbility() not implemented in " + this.name;
+    }
+
+    onDeath(): void {
+        wantGameOver = true;
+    }
+}

@@ -5,11 +5,44 @@
         "device": "*"
     },
     "files": [
-        "main.ts",
+        "config.ts",
         "README.md",
         "assets.json",
         "images.g.jres",
-        "images.g.ts"
+        "images.g.ts",
+        "assets.ts",
+        "Interfaces/ICharacter.ts",
+        "BaseClasses/Character.ts",
+        "BaseClasses/HeroCharacter.ts",
+        "Characters/Trump.ts",
+        "Characters/Knight.ts",
+        "Characters/Rogue.ts",
+        "Characters/Wizard.ts",
+        "BaseClasses/Boss.ts",
+        "Bosses/CryptDemon.ts",
+        "Bosses/ForestFiend.ts",
+        "Bosses/FrostDemon.ts",
+        "Bosses/MagmaDemon.ts",
+        "WorldGen/GenRandom.ts",
+        "WorldGen/GenContext.ts",
+        "Rooms/RoomTemplate.ts",
+        "Rooms/DungeonRooms.ts",
+        "WorldGen/RoomDungeonGen.ts",
+        "BaseClasses/Level.ts",
+        "Levels/Dungeon.ts",
+        "Levels/Forest.ts",
+        "Levels/Glacier.ts",
+        "Levels/Volcano.ts",
+        "Levels/LevelRoster.ts",
+        "BaseClasses/Item.ts",
+        "Items/Items.ts",
+        "Items/ItemRoster.ts",
+        "Player.ts",
+        "Pathfinding.ts",
+        "Fog.ts",
+        "RoomClear.ts",
+        "Minimap.ts",
+        "main.ts"
     ],
     "testFiles": [
         "test.ts"
@@ -22,6 +55,7 @@
         "arcade"
     ],
     "preferredEditor": "tsprj",
+<<<<<<< Updated upstream
     "languageRestriction": "javascript-only",
     "palette": [
         "#000000",
@@ -42,3 +76,7 @@
         "#000000"
     ]
 }
+=======
+    "languageRestriction": "javascript-only"
+}
+>>>>>>> Stashed changes

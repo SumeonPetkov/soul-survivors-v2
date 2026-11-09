@@ -3,6 +3,28 @@ namespace myImages {
 
     helpers._registerFactory("image", function(name: string) {
         switch(helpers.stringTrim(name)) {
+<<<<<<< Updated upstream
+=======
+            case "image2":
+            case "trump":return img`
+. . . . . . . . . . . . . . . . 
+. . . . f f f f f f f f f f . . 
+. . . f 5 5 5 5 5 5 5 5 5 5 f . 
+. . f 5 5 5 5 5 5 5 5 5 5 5 5 f 
+. f 5 5 5 5 5 5 5 5 5 5 5 5 5 f 
+. . f f 4 4 4 4 4 4 4 4 4 4 4 f 
+. . . f 4 f 4 4 4 4 4 4 f 4 4 f 
+. . . f 4 4 4 f f f f 4 4 4 4 f 
+. . . f 4 4 4 4 4 4 4 4 4 4 4 f 
+. . . f 4 4 4 4 4 4 4 4 4 4 4 f 
+. . . f f f f f f f f f f f f f 
+. . . f 8 8 f 1 2 1 f 8 8 8 8 f 
+. . . f 8 8 8 f 2 f 8 8 8 8 8 f 
+. . . f 8 8 8 8 f 8 8 8 8 8 8 f 
+. . . . f 8 8 8 8 8 8 8 8 8 f . 
+. . . . . f f f f f f f f f . . 
+`;
+>>>>>>> Stashed changes
             case "image3":
             case "myImage1":return img`
 . . . f f f f f f f f f . . . . 
@@ -61,6 +83,7 @@ f f e e e e f f c e e e e e f .
 f e e e e f f f c e e e e e e f 
 `;
             case "image5":
+<<<<<<< Updated upstream
             case "myImage3":return img`
 . . . . . . . . . . . . . . . . 
 . . . f f f f f f f f f f . . . 
@@ -209,6 +232,109 @@ f f . . . . . . . . . f 1 f . .
 ................................
 ................................
 `;
+=======
+            case "knight":return img`
+. . . . . . . . . . . . . . . . 
+. . . . . f f f f f f . . . . . 
+. . . . f b b b b b b f . . . . 
+. . . f b b 1 1 1 1 b b f . . . 
+. . . f b 1 f f f f f f 1 f . . 
+. . . f b f 9 9 9 9 9 9 f . . . 
+. . . f b b f f f f f f b f . . 
+. . . . f b b b b b b b f . . . 
+. . . f f 8 8 b b b b 8 8 f . . 
+. . f 8 8 8 8 b b b b 8 8 8 f . 
+. . f 8 d d 8 b b b b 8 d d 8 f 
+. . f f 8 8 8 b b b b 8 8 8 f . 
+. . . f 8 8 b b b b b b 8 8 f . 
+. . . f b b b f f f f b b b f . 
+. . . f c c c f . . f c c c f . 
+. . . f f f f f . . f f f f f . 
+`;
+            case "image6":
+            case "slime":return img`
+. f 7 . 7 6 . 7 7 . . . 
+. 7 6 . 7 6 . 1 f . . . 
+. 7 f f 7 f . f . . . . 
+. 7 . 7 7 . f 7 . . . . 
+. 7 . 7 6 . 7 7 . . . . 
+f f . 1 6 . 1 6 . . . . 
+f . . f f f 1 f . . . . 
+f . f 7 . 7 7 . . . . . 
+f . 7 6 . 7 6 . . . . . 
+. . 1 6 . 7 6 . f . . . 
+. . 1 f f 7 f . f . . . 
+. f 7 . 7 7 . . f . . . 
+`;
+            case "image7":
+            case "bat":return img`
+. c . . a a . c . . . . 
+f c . . a f . c . . . . 
+f f . . a . . c . . . . 
+f . . f a . . f . . . . 
+f . . a a . f . . . . . 
+f . . a f . c . f . . . 
+. . . 2 . . a . f . . . 
+. . . a . f c . f . . . 
+. . f 1 . a f . f . . . 
+. . c f . a . . f . . . 
+. . a . . 2 . f . . . . 
+. f c . f a . c . . . . 
+`;
+            case "image8":
+            case "goblin":return img`
+. . f . 7 e . f . . . . 
+. . f . 7 e . f . . . . 
+. . . . 7 . f f . . . . 
+. . . f e . 7 . . . . . 
+. . . 7 e . 7 f . . . . 
+. . . 2 e . 7 f . . . . 
+. . f 7 . . 7 . . . . . 
+. . 7 e . f f . . . . . 
+. . 7 e . 7 e . . . . . 
+. f 7 e . 2 7 . . . . . 
+. 7 7 e f 7 f f . . . . 
+. 7 f f 7 e f f . . . . 
+`;
+            case "image9":
+            case "ogre":return img`
+. . . . . . . . . . . . . . . . 
+. . . . . f f f f f f . . . . . 
+. . . . f c c c c c c f . . . . 
+. . . f c c 2 c c 2 c c f . . . 
+. . . f c c c c c c c c f . . . 
+. . . f c f 1 f f 1 f c f . . . 
+. . f f c c f f f f c c f f . . 
+. f c c c c c c c c c c c c f . 
+f c c c f c c c c c c f c c c f 
+f c c f f e e e e e e f f c c f 
+. f f . f e e e e e e f . f f . 
+. . . . f e e e e e e f . . . . 
+. . . . f c c f f c c f . . . . 
+. . . . f c c f f c c f . . . . 
+. . . f f f f f . f f f f f . . 
+. . . . . . . . . . . . . . . . 
+`;
+            case "image1":
+            case "myImage":return img`
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+. . . . . . . . . . . . . . . . 
+`;
+>>>>>>> Stashed changes
         }
         return null;
     })
@@ -233,6 +359,12 @@ f f . . . . . . . . . f 1 f . .
         }
         return null;
     })
+
+}
+// Auto-generated code. Do not edit.
+
+// Auto-generated code. Do not edit.
+namespace myTiles {
 
 }
 // Auto-generated code. Do not edit.
