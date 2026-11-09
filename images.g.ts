@@ -22,25 +22,6 @@ namespace myImages {
 f f e e e e f f c e e e e e f . 
 f e e e e f f f c e e e e e e f 
 `;
-            case "image1":
-            case "myImage":return img`
-. . . f f f f f f f f f f . . . 
-. . f d d d d d d d d d d f . . 
-. f d d d d d d d d d d d d f . 
-f d d d d d d d d d d d d d d f 
-. f d d d d d d d d d d d d f . 
-. . f 2 2 2 2 5 5 2 2 2 2 f . . 
-. . f 4 4 4 4 4 4 4 4 4 4 f . . 
-. f 4 f f f 4 4 4 f f f 4 4 f . 
-. f 4 1 f 1 4 4 4 1 f 1 4 4 f . 
-. . f 4 4 4 4 4 4 4 4 4 4 f f . 
-. . f 4 4 4 f f f f 4 4 4 f . . 
-. . f 4 4 f f f f f f 4 4 f . . 
-. . f f 4 f f 4 4 f f 4 f f . . 
-. . . f f 4 4 4 4 4 4 f f . . . 
-. . . . f f 4 4 4 4 f f . . . . 
-. . . . . f f f f f f . . . . . 
-`;
             case "image2":
             case "myImage0":return img`
 . . . . . . . . . . . . . . . . 
@@ -97,6 +78,44 @@ f 5 5 5 5 5 5 5 5 5 5 5 5 5 f .
 . . f 8 8 8 8 f 8 8 8 8 8 8 f . 
 . . . f 8 8 8 8 8 8 8 8 8 f . . 
 . . . . f f f f f f f f f . . . 
+`;
+            case "image1":
+            case "myImage":return img`
+. . . f f f f f f f f f f . . . 
+. . f d d d d d d d d d d f . . 
+. f d d d d d d d d d d d d f . 
+f d d d d d d d d d d d d d d f 
+. f d d d d d 5 5 d d d d d f . 
+. . f 2 2 2 2 5 5 2 2 2 2 f . . 
+. . f 4 4 4 4 4 4 4 4 4 4 f . . 
+. f 4 f f f 4 4 4 f f f 4 4 f . 
+. f 4 1 f 1 4 4 4 1 f 1 4 4 f . 
+. . f 4 4 4 4 4 4 4 4 4 4 f f . 
+. . f 4 4 4 f f f f 4 4 4 f . . 
+. . f 4 4 f f f f f f 4 4 f . . 
+. . f f 4 f f 4 4 f f 4 f f . . 
+. . . f f 4 4 4 4 4 4 f f . . . 
+. . . . f f 4 4 4 4 f f . . . . 
+. . . . . f f f f f f . . . . . 
+`;
+            case "image6":
+            case "myImage4":return img`
+. . . f f f f f f f f f f . . . 
+. . f d d d d d d d d d d f . . 
+. f d 2 d d d d d d d d d d f . 
+f d 2 d 2 d d d d d d d d d d f 
+. f d 2 d d d 5 5 d d d d d f . 
+. . f 2 2 2 2 5 5 2 2 2 2 f . . 
+. . f 4 4 4 4 4 4 4 4 4 4 f . . 
+. f 4 4 f f f 4 4 f f f 4 4 f . 
+. f 4 4 1 f 1 4 4 1 f 1 4 4 f . 
+. . f 4 4 4 4 4 4 4 4 4 4 f f . 
+. . f 4 f f 4 4 4 4 f f 4 f . . 
+. . f 4 4 f f f f f f 4 4 f . . 
+. . f f 4 4 f 2 2 f 4 4 f f . . 
+. . . f f 4 4 2 2 4 4 f f . . . 
+. . . . f f 4 4 4 4 f f . . . . 
+. . . . . f f f f f f . . . . . 
 `;
         }
         return null;
