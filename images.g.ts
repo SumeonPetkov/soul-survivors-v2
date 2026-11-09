@@ -79,6 +79,25 @@ f 5 5 5 5 5 5 5 5 5 5 5 5 5 f .
 f f e e e e f f c e e e e e f . 
 f e e e e f f f c e e e e e e f 
 `;
+            case "image5":
+            case "myImage3":return img`
+. . . . . . . . . . . . . . . . 
+. . . f f f f f f f f f f . . . 
+. . f 5 5 5 5 5 5 5 5 5 5 f . . 
+. f 5 5 5 5 5 5 5 5 5 5 5 5 f . 
+f 5 5 5 5 5 5 5 5 5 5 5 5 5 f . 
+. f f 2 2 2 2 2 2 2 2 2 2 2 f . 
+. . f 2 f 2 2 2 2 2 2 f 2 2 f . 
+. . f 2 2 2 f f f f 2 2 2 2 f . 
+. . f 2 2 2 2 2 2 2 2 2 2 2 f . 
+. . f 2 2 2 2 2 2 2 2 2 2 2 f . 
+. . f f f f f f f f f f f f f . 
+. . f 8 8 f 1 2 1 f 8 8 8 8 f . 
+. . f 8 8 8 f 2 f 8 8 8 8 8 f . 
+. . f 8 8 8 8 f 8 8 8 8 8 8 f . 
+. . . f 8 8 8 8 8 8 8 8 8 f . . 
+. . . . f f f f f f f f f . . . 
+`;
         }
         return null;
     })
