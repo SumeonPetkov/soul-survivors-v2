@@ -24,16 +24,12 @@ jobs:
         with:
           node-version: 22
 
-      - name: install makecode
-        run: |
-          npm install -g pxt
-          pxt target arcade
+      - name: install makecode cli
+        run: npm install -g makecode
 
+      # -j = browser (JavaScript) build, --always-built = write to built/ not built/<hw>/
       - name: build game
-        run: |
-          pxt clean
-          pxt install
-          pxt build --cloud
+        run: mkc build --java-script --always-built
 
       # index.html loads ./assets/js/binary.js - replace the stale committed copy
       - name: copy fresh binary
