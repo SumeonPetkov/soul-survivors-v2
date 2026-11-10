@@ -1,5 +1,6 @@
 // LevelLayout.RoomDungeon: the map is split into a grid of cells, each cell gets a
-// hand-drawn room (Rooms/*.ts) and neighbouring rooms are joined by corridors.
+// randomly generated room (WorldGen/RoomShapes.ts, or a hand-drawn one from Rooms/*.ts
+// with Level.handDrawnRoomChance %) and neighbouring rooms are joined by corridors.
 // A random spanning tree guarantees every room is reachable; extra links add loops.
 
 /** A room stamped onto the map. x/y = top-left tile. */
@@ -45,7 +46,6 @@ function generateRoomDungeon(level: Level, rng: GenRandom): GenContext {
     ctx.fillRect(1, 1, ctx.width - 2, ctx.height - 2, true);
 
     const pool = roomsInSet(level.roomSet);
-    if (pool.length == 0) throw "no rooms defined for room set '" + level.roomSet + "'";
     const maxSize = cell - 4; // 2 tiles of padding on each side keeps room for corridors
     const startCell = Math.idiv(rows, 2) * cols + Math.idiv(cols, 2);
     const emptyPct = rng.int(level.emptyCellChance[0], level.emptyCellChance[level.emptyCellChance.length - 1]);
@@ -58,7 +58,8 @@ function generateRoomDungeon(level: Level, rng: GenRandom): GenContext {
             let grid: number[][] = null;
             let open = false;
             if (i != startCell && rng.chance(emptyPct)) grid = null;
-            else grid = _rdPickRoom(pool, i == startCell, maxSize, rng);
+            else if (pool.length > 0 && rng.chance(level.handDrawnRoomChance)) grid = _rdPickRoom(pool, i == startCell, maxSize, rng);
+            else grid = generateRandomRoom(maxSize, i == startCell, rng);
             if (!grid) {
                 open = true;
                 grid = [];

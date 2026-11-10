@@ -28,6 +28,7 @@
         "WorldGen/GenContext.ts",
         "Rooms/RoomTemplate.ts",
         "Rooms/DungeonRooms.ts",
+        "WorldGen/RoomShapes.ts",
         "WorldGen/RoomDungeonGen.ts",
         "BaseClasses/Level.ts",
         "Levels/Dungeon.ts",
