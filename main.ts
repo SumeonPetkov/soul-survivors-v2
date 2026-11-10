@@ -1216,10 +1216,10 @@ scene.createRenderable(100, (t, c) => {
 // list it in pxt.json, and add `new MyHero()` here.
 function createHeroRoster(): HeroCharacter[] {
     return [
-        new TrumpCharacter(),
         new KnightCharacter(),
         new RogueCharacter(),
         new WizardCharacter(),
+        new NinjaCharacter(),
     ]
 }
 
