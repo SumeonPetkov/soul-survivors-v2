@@ -1220,6 +1220,7 @@ function createHeroRoster(): HeroCharacter[] {
         new KnightCharacter(),
         new RogueCharacter(),
         new WizardCharacter(),
+        new NinjaCharacter(),
     ]
 }
 

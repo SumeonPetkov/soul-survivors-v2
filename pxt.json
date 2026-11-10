@@ -18,6 +18,7 @@
         "Characters/Knight.ts",
         "Characters/Rogue.ts",
         "Characters/Wizard.ts",
+        "Characters/Ninja.ts",
         "BaseClasses/Boss.ts",
         "Bosses/CryptDemon.ts",
         "Bosses/ForestFiend.ts",
