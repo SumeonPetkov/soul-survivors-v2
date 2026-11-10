@@ -879,24 +879,6 @@ sprites.onOverlap(SpriteKind.Orbit, SpriteKind.EnemyShot, function (o, s) {
     s.destroy()
 })
 
-// Trump's Big Wall bricks: block shots, shove enemies outward and chip them
-sprites.onOverlap(SpriteKind.Barrier, SpriteKind.EnemyShot, function (b, s) {
-    s.destroy()
-})
-
-sprites.onOverlap(SpriteKind.Barrier, SpriteKind.Enemy, function (b, e) {
-    const dx = e.x - getDN(b, "cx")
-    const dy = e.y - getDN(b, "cy")
-    const d = Math.sqrt(dx * dx + dy * dy) + 0.01
-    const push = WALL_RADIUS + 10
-    if (d < push && !isWallAt(getDN(b, "cx") + dx / d * push, getDN(b, "cy") + dy / d * push)) {
-        e.setPosition(getDN(b, "cx") + dx / d * push, getDN(b, "cy") + dy / d * push)
-    }
-    if (gameTime - getDN(e, "wall") < 500) return
-    setDN(e, "wall", gameTime)
-    hurtEnemy(e, getDN(b, "dmg"))
-})
-
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (p, e) {
     hurtPlayer(boss && e == boss ? boss.contactDamage : E_DMG[getDN(e, "type")])
 })
@@ -1220,6 +1202,7 @@ function createHeroRoster(): HeroCharacter[] {
         new RogueCharacter(),
         new WizardCharacter(),
         new NinjaCharacter(),
+        new PirateCharacter(),
     ]
 }
 

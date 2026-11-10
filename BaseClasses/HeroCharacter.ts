@@ -1,5 +1,8 @@
 // A playable hero: a Character with health, its own attack and an A-button ability.
 // Concrete heroes: `class X extends HeroCharacter implements ICharacterWithAbility`.
+/** Hero body size in px, used for walls and getting hit. Kept well under a 16px tile so 1-tile tunnels are easy. */
+const HERO_BODY = 10;
+
 abstract class HeroCharacter extends Character implements ICharacterWithAbility {
     /** Auto-attack settings. Set these in the hero's constructor. */
     attackName: string;
@@ -42,6 +45,24 @@ abstract class HeroCharacter extends Character implements ICharacterWithAbility 
         this.imgL = img.clone();
         this.imgL.flipX();
         this.setImage(this.faceRight ? this.imgR : this.imgL);
+    }
+
+    /**
+     * Replaces MakeCode's default hitbox (the box around every visible pixel) with a
+     * fixed HERO_BODY box at the hero's feet, centred so it doesn't move when the hero
+     * turns. Works for any sprite size, e.g. the 32x32 pirate.
+     */
+    setHitbox() {
+        if (this._hitbox && this._hitbox.isValid()) return;
+        const img = this.image;
+        const full = game.calculateHitBox(this); // box around the visible pixels
+        const fullTop = Fx.toInt(full.oy);
+        const fullH = Fx.toInt(full.height);
+        const w = Math.min(HERO_BODY, img.width);
+        const h = Math.min(HERO_BODY, fullH);
+        const ox = Math.floor((img.width - w) / 2);
+        const oy = fullTop + fullH - h;
+        this._hitbox = new game.Hitbox(this, Fx8(w), Fx8(h), Fx8(ox), Fx8(oy));
     }
 
     face(right: boolean) {
