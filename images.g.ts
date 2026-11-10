@@ -360,3 +360,9 @@ f c c f f e e e e e e f f c c f
 
 }
 // Auto-generated code. Do not edit.
+
+// Auto-generated code. Do not edit.
+namespace myTiles {
+
+}
+// Auto-generated code. Do not edit.
