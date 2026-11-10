@@ -31,14 +31,6 @@
         "mimeType": "image/x-mkcd-f4",
         "displayName": "myImage3"
     },
-    "myImages.image1": {
-        "id": "myImages.image1",
-        "data": "hwQQABAAAAAA8AAAAAAAAADfD/APAAAA8N39T/T/DwDf3S30QUT/AN/dLfRPRPQP390t9EH0T//f3S1ERP9P9N/dVURE/0T0391VRET/RPTf3S30Qf9P9N/dLfRP9E//390t9EFE9A/f3S1ERET/APDd/U/0/w8AAN8P8P8AAAAA8AAAAAAAAA==",
-        "dataEncoding": "base64",
-        "namespace": "myImages.",
-        "mimeType": "image/x-mkcd-f4",
-        "displayName": "myImage"
-    },
     "myImages.image6": {
         "id": "myImages.image6",
         "data": "hwQQABAAAAAA8AAAAAAAAADfD/APAAAA8C39T/T/DwDf0iJERET/AN8tLfRBT/QP390t9E//RP/f3S30QfRP9N/dVURE9CL0391VRET0IvTf3S30QfRP9N/dLfRP/0T/390t9EFP9A/f3S1ERET/APDd/U/0/w8AAN8P8P8AAAAA8AAAAAAAAA==",
@@ -142,5 +134,13 @@
         "namespace": "myImages.",
         "mimeType": "image/x-mkcd-f4",
         "displayName": "ogre"
+    },
+    "myImages.image1": {
+        "id": "myImages.image1",
+        "data": "hwQgACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8A8AAAAAAAAAAADw//8AAP8PAAAAAAAAAAAAj4hEDwD/DwAAAAAAAAAA8IiIRA/w/w8AAAAAAAAAAI+I+EQP7/8PAAAADwAAAACPiP//8O7/DwAA8P4A/wAAj/j//+/u/w8AAO/u/0T//4+IiIjv7v8PAPDv7kIfRPSPiIiI7+7/DwDw/u5C/0RE/4iIiO/u/w8A8O7vQh9E//SPiIjv7v8PAPDu/kJE9P9Ej4iI7/4AAADw7l5PRPRPRB8REeUPAAAA8O5e9UT0T0QfERHlDwAAAPDu7kL/9P9Ej4iI7/4AAADw7u5C/0T/9I+Fhe/u/w8A8O7uQv9ERP+IiIjv7v8PAPDu7kJET/SPiIiI7+7/DwAA7+7/RP//j4iIiO/u/w8AAPD+AP8PAI/4///v7v8PAAAADwAAAACPiP//8O7/DwAAAAAAAAAAj4j4RA/v/w8AAAAAAAAAAPCIiEQP8P8PAAAAAAAAAAAAj4hEDwD/DwAAAAAAAAAAAPD//wAA/w8AAAAAAAAAAAAAAAAAAPAPAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+        "dataEncoding": "base64",
+        "namespace": "myImages.",
+        "mimeType": "image/x-mkcd-f4",
+        "displayName": "myImage"
     }
 }
