@@ -55,7 +55,6 @@
         "arcade"
     ],
     "preferredEditor": "tsprj",
-<<<<<<< Updated upstream
     "languageRestriction": "javascript-only",
     "palette": [
         "#000000",
@@ -76,7 +75,3 @@
         "#000000"
     ]
 }
-=======
-    "languageRestriction": "javascript-only"
-}
->>>>>>> Stashed changes

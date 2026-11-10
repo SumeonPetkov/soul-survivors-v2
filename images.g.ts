@@ -3,8 +3,6 @@ namespace myImages {
 
     helpers._registerFactory("image", function(name: string) {
         switch(helpers.stringTrim(name)) {
-<<<<<<< Updated upstream
-=======
             case "image2":
             case "trump":return img`
 . . . . . . . . . . . . . . . . 
@@ -24,7 +22,7 @@ namespace myImages {
 . . . . f 8 8 8 8 8 8 8 8 8 f . 
 . . . . . f f f f f f f f f . . 
 `;
->>>>>>> Stashed changes
+
             case "image3":
             case "myImage1":return img`
 . . . f f f f f f f f f . . . . 
@@ -83,7 +81,6 @@ f f e e e e f f c e e e e e f .
 f e e e e f f f c e e e e e e f 
 `;
             case "image5":
-<<<<<<< Updated upstream
             case "myImage3":return img`
 . . . . . . . . . . . . . . . . 
 . . . f f f f f f f f f f . . . 
@@ -232,7 +229,6 @@ f f . . . . . . . . . f 1 f . .
 ................................
 ................................
 `;
-=======
             case "knight":return img`
 . . . . . . . . . . . . . . . . 
 . . . . . f f f f f f . . . . . 
@@ -334,7 +330,6 @@ f c c f f e e e e e e f f c c f
 . . . . . . . . . . . . . . . . 
 . . . . . . . . . . . . . . . . 
 `;
->>>>>>> Stashed changes
         }
         return null;
     })

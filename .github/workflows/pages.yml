@@ -1,0 +1,60 @@
+name: Deploy game to GitHub Pages
+
+on:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: install makecode
+        run: |
+          npm install -g pxt
+          pxt target arcade
+
+      - name: build game
+        run: |
+          pxt clean
+          pxt install
+          pxt build --cloud
+
+      # index.html loads ./assets/js/binary.js - replace the stale committed copy
+      - name: copy fresh binary
+        run: cp built/binary.js assets/js/binary.js
+
+      - uses: actions/configure-pages@v5
+
+      - name: build site (jekyll)
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      - uses: actions/upload-pages-artifact@v3
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
