@@ -19,6 +19,7 @@
         "Characters/Wizard.ts",
         "Characters/Ninja.ts",
         "Characters/Pirate.ts",
+        "Characters/Napoleon.ts",
         "BaseClasses/Boss.ts",
         "Bosses/CryptDemon.ts",
         "Bosses/ForestFiend.ts",
