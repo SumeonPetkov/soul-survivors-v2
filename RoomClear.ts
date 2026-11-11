@@ -8,6 +8,8 @@ let roomMode = false
 let _rcActive = -1
 let _rcCleared: boolean[] = []
 let _rcWavesLeft = 0
+/** waves this room started with (for the "WAVE 2/3" banner) */
+let _rcWavesTotal = 0
 /** gameTime when the pending wave appears (0 = no wave pending) */
 let _rcWaveAt = 0
 let _rcPending: number[] = [] // tile indexes where the pending wave appears
@@ -120,18 +122,26 @@ function _rcEnter(i: number) {
     } else if (_rcMini[i]) {
         // one wave: the miniboss plus a few minions
         _rcWavesLeft = 1
+        _rcWavesTotal = 1
         _rcMiniAt = _rcFarthestFloor(currentLevel.rooms[i])
         _rcQueueWave()
     } else {
         const lv = currentLevel
         _rcWavesLeft = Math.max(1, randint(lv.roomWaves[0], lv.roomWaves[lv.roomWaves.length - 1]))
+        _rcWavesTotal = _rcWavesLeft
         _rcQueueWave()
-        banner("ROOM LOCKED!", 1000)
+        banner(_rcWavesTotal > 1 ? "ROOM LOCKED! " + _rcWavesTotal + " WAVES" : "ROOM LOCKED!", 1200)
     }
 }
 
 function _rcQueueWave() {
     _rcWavesLeft--
+    // later waves: say so, so the warning dots don't look like leftovers
+    const waveNum = _rcWavesTotal - _rcWavesLeft
+    if (waveNum >= 2 && _rcMiniAt.length == 0) {
+        banner("WAVE " + waveNum + "/" + _rcWavesTotal, 1000)
+        sfx(music.thump)
+    }
     const lv = currentLevel
     const room = lv.rooms[_rcActive]
     let n = randint(lv.roomEnemies[0], lv.roomEnemies[lv.roomEnemies.length - 1]) + (floorNum - 1) * lv.roomEnemiesPerFloor

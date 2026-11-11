@@ -111,6 +111,25 @@ function makeExplosion(r: number): Image {
     im.fillCircle(r, r, r - 9, 5)
     return im
 }
+/** Red/orange spark burst for enemy deaths (the white PUFF_IMG means "something spawns here"). */
+function makeDeathBurst(): Image {
+    const im = image.create(11, 11)
+    // 8 sparks pointing outward
+    im.drawLine(5, 0, 5, 2, 2)
+    im.drawLine(5, 8, 5, 10, 2)
+    im.drawLine(0, 5, 2, 5, 2)
+    im.drawLine(8, 5, 10, 5, 2)
+    im.setPixel(1, 1, 4)
+    im.setPixel(9, 1, 4)
+    im.setPixel(1, 9, 4)
+    im.setPixel(9, 9, 4)
+    im.setPixel(2, 2, 4)
+    im.setPixel(8, 2, 4)
+    im.setPixel(2, 8, 4)
+    im.setPixel(8, 8, 4)
+    im.fillCircle(5, 5, 1, 4)
+    return im
+}
 function makePortal(a: number, b: number): Image {
     const im = image.create(20, 20)
     im.fillCircle(10, 10, 9, 15)
@@ -123,6 +142,7 @@ function makePortal(a: number, b: number): Image {
 
 const SHOT_IMG = makeBall(2, 2, 3)
 const PUFF_IMG = makeBall(2, 1, 13)
+const DEATH_IMG = makeDeathBurst()
 const BLADE_IMG = makeBlade()
 const BOLT_IMG = makeBolt()
 const EXPLO_IMG = makeExplosion(18)
@@ -510,7 +530,7 @@ function killEnemy(e: Sprite) {
     if (getDN(e, "elite") > 0) dropChest(e.x, e.y)
     if (player) for (const it of player.perks()) it.onKill(e.x, e.y)
     if (Math.percentChance(t == 3 ? 6 : 1.5)) dropPickup(2, e.x - 3, e.y + 2)
-    fx(PUFF_IMG, e.x, e.y, 120)
+    fx(DEATH_IMG, e.x, e.y, 150)
     e.destroy()
 }
 
@@ -529,8 +549,11 @@ function bossDefeated(b: Boss) {
     const cdy = hero.y - b.y
     const cd = Math.sqrt(cdx * cdx + cdy * cdy) + 0.01
     dropChest(b.x + cdx / cd * 28, b.y + cdy / cd * 28)
+    // the boss can die wedged against (or inside) a wall: snap the portal to the
+    // nearest floor tile the hero can actually walk to
+    const pp = nearestReachableSpot(b.x, b.y)
     portal = sprites.create(PORTAL_A, SpriteKind.Portal)
-    portal.setPosition(b.x, b.y)
+    portal.setPosition(pp[0], pp[1])
     portal.z = 1
     setDN(portal, "ready", gameTime + 2500)
     magnetAll = true
@@ -610,8 +633,28 @@ function addOrbit() {
 
 
 // ---------------- MENUS ----------------
+// Menus must not push their scene in the middle of a frame. The engine updates sprites
+// (lifespan, AutoDestroy) at frame priority 55, AFTER game.onUpdate (20) and overlaps (15),
+// and it removes a dying sprite from game.currentScene() - so if a menu was pushed earlier
+// in that frame, sprites expiring that frame (explosions, lightning...) are removed from the
+// menu scene instead and stay stuck in the game scene forever. So openMenu only queues the
+// menu, and it is shown from a frame handler that runs right after the sprite update.
+let _pendingMenu: () => void = null
+game.eventContext().registerFrameHandler(56, function () {
+    if (!_pendingMenu) return
+    const show = _pendingMenu
+    _pendingMenu = null
+    show()
+})
+
 function openMenu(title: string, names: string[], descs: string[], footer: string, onPick: (i: number) => void, icons: Image[] = null) {
     menuOpen = true
+    _pendingMenu = function () {
+        _showMenu(title, names, descs, footer, onPick, icons)
+    }
+}
+
+function _showMenu(title: string, names: string[], descs: string[], footer: string, onPick: (i: number) => void, icons: Image[]) {
     game.pushScene()
     let sel = 0
     scene.setBackgroundColor(15)

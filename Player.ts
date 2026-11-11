@@ -38,7 +38,7 @@ class Player {
         this.critChance = 5;
         this.critMult = 2;
         this.xpMult = 1;
-        this.pickupRange = 300;
+        this.pickupRange = 50;
     }
 
     /** Everything whose hooks run: carried items, then owned buffs. */
