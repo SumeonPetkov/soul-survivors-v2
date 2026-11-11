@@ -10,6 +10,7 @@ const ITEM_POOL: (() => Item)[] = [
     () => new SplitCrystal(),
     () => new BombRing(),
     () => new RegenCharm(),
+    () => new StarTracer(),
 ];
 
 /** Number of choices a chest offers. */

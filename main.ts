@@ -511,7 +511,7 @@ function chooseSwap(c: Sprite, it: Item) {
         player.replaceItem(i, it)
         banner("SWAPPED " + old.name.toUpperCase(), 1500)
         sfx(music.powerUp)
-        c.destroy()
+        if (c) c.destroy() // null when called from the dev menu
     }, icons)
 }
 
@@ -1003,7 +1003,7 @@ game.onUpdate(function () {
     updateFog()
 
     // aim + face
-    const tgt = findTarget(hero.x, hero.y, SW * 0.72, true)
+    const tgt = hero.currentTarget()
     if (tgt) aimAngle = Math.atan2(tgt.y - hero.y, tgt.x - hero.x)
     else if (hero.vx != 0 || hero.vy != 0) aimAngle = Math.atan2(hero.vy, hero.vx)
     const right = Math.cos(aimAngle) >= 0

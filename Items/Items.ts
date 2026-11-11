@@ -85,6 +85,8 @@ class WingedBoots extends Item {
 }
 
 class StarTracer extends Item {
+    timer = 0;
+    star = getImage("myImage11");
     constructor() {
         super("tracer", "Star Tracer", 3, img`
             . . . . . . . . . .
@@ -99,8 +101,16 @@ class StarTracer extends Item {
             . . . . . . . . . .
         `);
     }
-    describe(level: number) { return "+" + (2 * level) + " bullets per shot"; }
-    apply(n: number) { player.multishot += 2 * n; }
+    describe(level: number) { return "+" + (0.25 * level) + " damage a star"; }
+    // fires `level` homing stars per second in random directions
+    update(dt: number) {
+        if (!hero.canAttack()) return; // no enemy to shoot: hold the stars
+        this.timer += dt;
+        if (this.timer < 1000 / this.level) return;
+        this.timer = 0;
+        //                                                     speed dmg life pierce boom home
+        hero.shoot(this.star, Math.random() * 2 * Math.PI, 100, 1.5 + 0.25 * this.level, 500 + this.level * 100, 1, 0, 1);
+    }
 }
 
 class VampireFang extends Item {
