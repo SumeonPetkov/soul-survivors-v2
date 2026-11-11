@@ -71,8 +71,17 @@ function _rsOutline(g: number[][], w: number, h: number, shape: number, rng: Gen
     }
 }
 
-/** Adds walls inside the room. Features stay 2 tiles from the border so the walk-around edge stays open. */
+/** Outline walls (before the interior is added); interior walls measure their clearance from these. */
+let _rsOutlineWalls: boolean[] = [];
+
+/**
+ * Adds walls inside the room. Features keep a gap of floor (2 tiles, 3 around the ring block)
+ * from the room's actual outline - not just its bounding box - so oval / octagon / notched
+ * rooms keep a walkable edge too.
+ */
 function _rsInterior(g: number[][], w: number, h: number, kind: number, rng: GenRandom) {
+    _rsOutlineWalls = [];
+    for (let r = 0; r < h; r++) for (let c = 0; c < w; c++) _rsOutlineWalls.push(g[r][c] != ROOM_FLOOR);
     if (kind == 1) {
         // pillar grid
         const s = rng.int(2, 3);
@@ -95,7 +104,7 @@ function _rsInterior(g: number[][], w: number, h: number, kind: number, rng: Gen
         const bh = Math.max(1, h - 4 - 2 * rng.int(1, 2));
         const c0 = Math.idiv(w - bw, 2);
         const r0 = Math.idiv(h - bh, 2);
-        for (let r = r0; r < r0 + bh; r++) for (let c = c0; c < c0 + bw; c++) _rsWall(g, c, r, w, h);
+        for (let r = r0; r < r0 + bh; r++) for (let c = c0; c < c0 + bw; c++) _rsWall(g, c, r, w, h, 3);
     } else if (kind == 3) {
         // scattered rocks (1x1 or 2x2)
         for (let n = rng.int(2, 2 + Math.idiv(w * h, 30)); n > 0; n--) {
@@ -118,14 +127,21 @@ function _rsInterior(g: number[][], w: number, h: number, kind: number, rng: Gen
         }
     } else if (kind == 5) {
         // a column near each corner
-        const inset = rng.int(2, 3);
+        const inset = rng.int(3, 4);
         const corners = [[inset, inset], [w - 1 - inset, inset], [inset, h - 1 - inset], [w - 1 - inset, h - 1 - inset]];
         for (const p of corners) _rsWall(g, p[0], p[1], w, h);
     }
 }
 
-function _rsWall(g: number[][], c: number, r: number, w: number, h: number) {
-    if (c >= 2 && r >= 2 && c < w - 2 && r < h - 2) g[r][c] = ROOM_WALL;
+/** Turns (c, r) into wall only if no outline wall is within `gap` tiles of it (so `gap` floor tiles stay between). */
+function _rsWall(g: number[][], c: number, r: number, w: number, h: number, gap = 2) {
+    if (c < gap || r < gap || c >= w - gap || r >= h - gap) return;
+    for (let dr = -gap; dr <= gap; dr++) {
+        for (let dc = -gap; dc <= gap; dc++) {
+            if (_rsOutlineWalls[(r + dr) * w + c + dc]) return;
+        }
+    }
+    g[r][c] = ROOM_WALL;
 }
 
 /** Keeps only the floor reachable from the tile nearest the middle; returns how many floor tiles remain. */
