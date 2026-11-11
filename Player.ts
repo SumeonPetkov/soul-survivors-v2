@@ -31,7 +31,7 @@ class Player {
         this.rateMult = 1;
         this.multishot = 0;
         this.critChance = 5;
-        this.pickupRange = 300;
+        this.pickupRange = 50;
     }
 
     /** Level-up buffs owned (upgrade ids with at least one level). Feast doesn't count. */
