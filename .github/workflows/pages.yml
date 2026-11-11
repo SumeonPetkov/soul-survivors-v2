@@ -18,6 +18,19 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: Disable dev mode
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          file = Path("config.ts")
+          content = file.read_text()
+          content = content.replace(
+              "const DEV_MODE = true",
+              "const DEV_MODE = false"
+          )
+          file.write_text(content)
+          PY
+
       - uses: actions/checkout@v5
 
       - uses: actions/setup-node@v6
