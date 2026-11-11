@@ -31,7 +31,7 @@ function openDevItemMenu() {
     names.push("Close")
     descs.push("")
     icons.push(null)
-    openMenu("DEV: GIVE ITEM", names, descs, "Items " + player.items.length + "/" + ITEM_SLOTS + "  A give", function (i: number) {
+    openMenu("DEV: GIVE ITEM", names, descs, "Items " + player.items.length + "/" + player.maxItemSlots  + "  A give", function (i: number) {
         if (i >= items.length) return
         const it = items[i]
         if (isCarried(it)) {
@@ -41,7 +41,7 @@ function openDevItemMenu() {
             }
             player.upgradeItem(it)
             banner(it.name.toUpperCase() + " LV" + it.level, 1000)
-        } else if (player.items.length < ITEM_SLOTS) {
+        } else if (player.items.length < player.maxItemSlots ) {
             player.equipItem(it)
             banner("GOT " + it.name.toUpperCase(), 1000)
         } else {
