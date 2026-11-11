@@ -21,14 +21,22 @@ jobs:
       - name: Disable dev mode
         run: |
           python - <<'PY'
+          import os
           from pathlib import Path
-          file = Path("config.ts")
+
+          file = Path(os.environ["GITHUB_WORKSPACE"]) / "config.ts"
+
+          print(f"Editing: {file}")
+
           content = file.read_text()
-          content = content.replace(
-              "const DEV_MODE = true",
-              "const DEV_MODE = false"
-          )
-          file.write_text(content)
+
+          old = "const DEV_MODE = true"
+          new = "const DEV_MODE = false"
+
+          if old not in content:
+              raise RuntimeError("DEV_MODE declaration not found")
+
+          file.write_text(content.replace(old, new))
           PY
 
       - uses: actions/checkout@v5
