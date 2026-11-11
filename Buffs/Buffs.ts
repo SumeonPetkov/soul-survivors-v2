@@ -41,7 +41,7 @@ class HolyAura extends Buff {
     }
     radius(level: number) { return 20 + level * 5; }
     damage(level: number) { return 0.5 + 0.5 * level; }
-    describe(level: number) { return "Burn nearby enemies\n" + this.damage(level) + " dmg every 0.5s"; }
+    describe(level: number) { return "Damage enemies near you\n" + this.damage(level) + " dmg every 0.5s"; }
     apply(n: number) {
         if (!this.ring) {
             this.ring = sprites.create(image.create(2, 2), SpriteKind.Attach);
@@ -199,9 +199,10 @@ class SwiftBoots extends Buff {
     }
 }
 
-class Magnet extends Buff {
+// pickup range already covers most of the screen, so this speeds up levelling instead
+class Wisdom extends Buff {
     constructor() {
-        super("magnet", "Magnet", 4, img`
+        super("wisdom", "Wisdom", 4, img`
             . . . . . . . . . .
             . 1 1 . . . . 1 1 .
             . 2 2 . . . . 2 2 .
@@ -214,8 +215,8 @@ class Magnet extends Buff {
             . . . . . . . . . .
         `);
     }
-    describe(level: number) { return "+50% pickup range"; }
-    apply(n: number) { for (let i = 0; i < n; i++) player.pickupRange *= 1.5; }
+    describe(level: number) { return "+15% XP from gems"; }
+    apply(n: number) { player.xpMult += 0.15 * n; }
 }
 
 class Critical extends Buff {
@@ -237,10 +238,10 @@ class Critical extends Buff {
     apply(n: number) { player.critChance += 8 * n; }
 }
 
-// Example of a buff with a nerf: stronger shots, but you get more fragile.
-class GlassCannon extends Buff {
+// A buff with a nerf: harder hits, slower shooting.
+class HeavyRounds extends Buff {
     constructor() {
-        super("glass", "Glass Cannon", 3, img`
+        super("heavy", "Heavy Rounds", 3, img`
             . . . . 9 9 . . . .
             . . . 9 1 1 9 . . .
             . . 9 1 9 9 1 9 . .
@@ -253,10 +254,10 @@ class GlassCannon extends Buff {
             . . . . . . . . . .
         `);
     }
-    describe(level: number) { return "+40% damage\n-1 max HP"; }
+    describe(level: number) { return "+30% damage\n-10% fire rate"; }
     apply(n: number) {
-        player.dmgMult += 0.4 * n;
-        hero.maxHp -= n; // never below 1
+        player.dmgMult += 0.3 * n;
+        player.rateMult -= 0.1 * n;
     }
 }
 

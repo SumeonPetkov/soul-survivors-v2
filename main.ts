@@ -509,7 +509,7 @@ function findTarget(x: number, y: number, range: number, flyersThroughWalls: boo
 }
 
 function hurtEnemy(e: Sprite, dmg: number) {
-    if (Math.percentChance(player.critChance)) dmg *= 2
+    if (Math.percentChance(player.critChance)) dmg *= player.critMult
     if (player) for (const it of player.perks()) dmg = it.modifyDamageDealt(e, dmg)
     if (boss && e == boss) {
         boss.hp -= dmg // Boss.onDeath() runs at 0 hp

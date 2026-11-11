@@ -16,6 +16,10 @@ class Player {
     rateMult: number;
     multishot: number;
     critChance: number;
+    /** Damage multiplier on a crit (2 = double damage). */
+    critMult: number;
+    /** XP gain multiplier (1 = normal). */
+    xpMult: number;
     pickupRange: number;
     maxItemSlots: number;
 
@@ -32,6 +36,8 @@ class Player {
         this.rateMult = 1;
         this.multishot = 0;
         this.critChance = 5;
+        this.critMult = 2;
+        this.xpMult = 1;
         this.pickupRange = 50;
     }
 
@@ -91,7 +97,7 @@ class Player {
     }
 
     gainXp(v: number) {
-        this.xp += v;
+        this.xp += v * this.xpMult;
         while (this.xp >= this.xpNeed) {
             this.xp -= this.xpNeed;
             this.level++;
