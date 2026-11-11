@@ -16,11 +16,20 @@ class IronHeart extends Item {
             . . . . . . . . . .
         `);
     }
-    describe(level: number) { return "+" + (3 * level) + " max HP"; }
+    // grows over the run: +1 max HP every new floor (lost if dropped)
+    grown = 0;
+    heal(level: number) { return 1 + 2 * level; }
+    describe(level: number) { return "Each new floor: +1 max HP (grows)\nand heal " + this.heal(level) + " HP"; }
+    onEachFloor(currentFloor: number) {
+        this.grown++;
+        hero.maxHp += 1;
+        hero.heal(this.heal(this.level));
+    }
     apply(n: number) {
-        hero.maxHp += 3 * n;
-        if (n > 0) hero.heal(3 * n);
-        else hero.hp = Math.min(hero.hp, hero.maxHp);
+        if (n < 0) {
+            hero.maxHp -= this.grown;
+            this.grown = 0;
+        }
     }
 }
 
@@ -39,8 +48,21 @@ class BerserkerMask extends Item {
             . . . . . . . . . .
         `);
     }
-    describe(level: number) { return "+" + (25 * level) + "% damage"; }
-    apply(n: number) { player.dmgMult += 0.25 * n; }
+    // stronger the more hurt you are; recalculated every frame
+    bonus = 0;
+    perHp(level: number) { return 6 + 4 * level; } // % per missing HP
+    describe(level: number) { return "+" + this.perHp(level) + "% damage\nper missing HP"; }
+    update(dt: number) {
+        const want = this.perHp(this.level) / 100 * (hero.maxHp - hero.hp);
+        player.dmgMult += want - this.bonus;
+        this.bonus = want;
+    }
+    apply(n: number) {
+        if (n < 0) {
+            player.dmgMult -= this.bonus;
+            this.bonus = 0;
+        }
+    }
 }
 
 class Hourglass extends Item {
@@ -58,8 +80,25 @@ class Hourglass extends Item {
             . . . . . . . . . .
         `);
     }
-    describe(level: number) { return "+" + (20 * level) + "% fire rate"; }
-    apply(n: number) { player.rateMult += 0.2 * n; }
+    // stops time for enemies on screen every few seconds
+    timer = 0;
+    interval(level: number) { return 17 - 3 * level; } // 14 / 11 / 8 s
+    describe(level: number) { return "Every " + this.interval(level) + "s: enemies on screen\nfreeze for 2s"; }
+    update(dt: number) {
+        this.timer += dt;
+        if (this.timer < this.interval(this.level) * 1000) return;
+        if (!hero.canAttack()) return; // wait until there's something to freeze
+        this.timer = 0;
+        for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
+            if (boss && e == boss) continue;
+            if (Math.abs(e.x - hero.x) > SW / 2 || Math.abs(e.y - hero.y) > SH / 2) continue;
+            setDN(e, "stun", gameTime + 2000);
+            e.vx = 0;
+            e.vy = 0;
+        }
+        fx(NOVA_IMG, hero.x, hero.y, 200);
+        sfx(music.zapped);
+    }
 }
 
 class WingedBoots extends Item {
@@ -77,10 +116,21 @@ class WingedBoots extends Item {
             . . . . . . . . . .
         `);
     }
-    describe(level: number) { return "+" + (12 * level) + " move speed"; }
+    // rewards kiting: faster shooting only while moving
+    bonus = 0;
+    rate(level: number) { return 10 + 15 * level; } // 25 / 40 / 55 %
+    describe(level: number) { return "While moving: +" + this.rate(level) + "% fire rate"; }
+    update(dt: number) {
+        const moving = hero.vx != 0 || hero.vy != 0;
+        const want = moving ? this.rate(this.level) / 100 : 0;
+        player.rateMult += want - this.bonus;
+        this.bonus = want;
+    }
     apply(n: number) {
-        hero.speed += 12 * n;
-        hero.enableMovement();
+        if (n < 0) {
+            player.rateMult -= this.bonus;
+            this.bonus = 0;
+        }
     }
 }
 
@@ -114,7 +164,7 @@ class StarTracer extends Item {
 }
 
 class VampireFang extends Item {
-    kills = 0;
+    dealt = 0; // damage dealt since the last heal
     constructor() {
         super("fang", "Vampire Fang", 3, img`
             . . . . . . . . . .
@@ -129,14 +179,16 @@ class VampireFang extends Item {
             . . . . . . . . . .
         `);
     }
-    killsNeeded(level: number) { return 12 - 3 * (level - 1); }
-    describe(level: number) { return "Heal 1 HP every " + this.killsNeeded(level) + " kills"; }
-    onKill(x: number, y: number) {
-        this.kills++;
-        if (this.kills >= this.killsNeeded(this.level)) {
-            this.kills = 0;
+    // lifesteal: heals from damage dealt, so it scales with damage builds
+    perHeal(level: number) { return 38 - 8 * level; } // 30 / 22 / 14 damage
+    describe(level: number) { return "Heal 1 HP per " + this.perHeal(level) + " damage dealt"; }
+    modifyDamageDealt(e: Sprite, damage: number) {
+        this.dealt += damage;
+        if (this.dealt >= this.perHeal(this.level)) {
+            this.dealt -= this.perHeal(this.level);
             hero.heal(1);
         }
+        return damage;
     }
 }
 
@@ -181,8 +233,14 @@ class LuckyCoin extends Item {
             . . . . . . . . . .
         `);
     }
-    describe(level: number) { return "+" + (10 * level) + "% crit chance"; }
-    apply(n: number) { player.critChance += 10 * n; }
+    // crits hit harder (pairs with the Critical buff, which adds crit chance)
+    describe(level: number) { return "Crits deal x" + (2.5 + 0.5 * level) + " damage\n(normally x2)"; }
+    added = 0;
+    apply(n: number) {
+        player.critMult -= this.added;
+        this.added = n < 0 ? 0 : 0.5 + 0.5 * this.level; // x3 / x3.5 / x4
+        player.critMult += this.added;
+    }
 }
 
 class SplitCrystal extends Item {
@@ -200,8 +258,19 @@ class SplitCrystal extends Item {
             . . a . . . a . . .
         `);
     }
-    describe(level: number) { return "+" + level + " bullet" + (level > 1 ? "s" : "") + " per shot"; }
-    apply(n: number) { player.multishot += n; }
+    // every few attacks, also bursts a ring of crystal shards
+    count = 0;
+    shard: Image = null;
+    every(level: number) { return 6 - level; } // every 5th / 4th / 3rd attack
+    describe(level: number) { return "Every " + this.every(level) + " attacks: fire a ring\nof 8 crystal shards"; }
+    onAttack(target: Sprite) {
+        this.count++;
+        if (this.count < this.every(this.level)) return;
+        this.count = 0;
+        if (!this.shard) this.shard = makeBall(2, 9, 1);
+        //                                            speed dmg life pierce
+        for (let i = 0; i < 8; i++) hero.shoot(this.shard, i * Math.PI / 4, 140, 1, 450, 1);
+    }
 }
 
 class BombRing extends Item {
@@ -242,7 +311,7 @@ class RegenCharm extends Item {
             . . . . . . . . . .
         `);
     }
-    interval(level: number) { return 12 - 3 * (level - 1); }
+    interval(level: number) { return 13 - 3 * level; } // 10 / 7 / 4 s
     describe(level: number) { return "Heal 1 HP every " + this.interval(level) + "s"; }
     update(dt: number) {
         this.timer += dt;
@@ -368,16 +437,16 @@ class ShadowStep extends Item {
     static readonly BURST_SPEED = 40;
     burstUntil = 0;
     bursting = false;
-    describe(level: number) { return "After a hit: +" + (0.3 * level) + "s invulnerable\nand a speed burst"; }
+    describe(level: number) { return "After a hit: +" + (0.5 * level) + "s invulnerable\nand +40 speed for 2s"; }
     modifyDamageTaken(damage: number) {
         if (damage <= 0) return damage;
-        invulnUntil = Math.max(invulnUntil, gameTime + 800 + 300 * this.level);
+        invulnUntil = Math.max(invulnUntil, gameTime + 800 + 500 * this.level);
         if (!this.bursting) {
             this.bursting = true;
             hero.speed += ShadowStep.BURST_SPEED;
             hero.enableMovement();
         }
-        this.burstUntil = gameTime + 1500;
+        this.burstUntil = gameTime + 2000;
         return damage;
     }
     update(dt: number) {
@@ -575,12 +644,26 @@ class EmberCore extends Item {
 }
 
 class OrbitBlade extends Item {
+    // +1 blade, and every blade (including Orbit Blades buff ones) flings shards outward
     added = 0; // blades this item has added to the shared `orbits` list
-    describe(level: number) { return "+" + level + " orbiting blade" + (level > 1 ? "s" : ""); }
+    timer = 0;
+    shard: Image = null;
+    interval(level: number) { return 2500 - 500 * level; } // 2 / 1.5 / 1 s
+    describe(level: number) { return "+1 blade. Every blade flings a\nshard every " + (this.interval(level) / 1000) + "s"; }
+    update(dt: number) {
+        this.timer += dt;
+        if (this.timer < this.interval(this.level)) return;
+        this.timer = 0;
+        if (!this.shard) this.shard = makeBall(1, 13, 1);
+        for (const o of orbits) {
+            const a = Math.atan2(o.y - hero.y, o.x - hero.x);
+            const s = hero.shoot(this.shard, a, 130, 1, 500);
+            s.setPosition(o.x, o.y);
+        }
+    }
     apply(n: number) {
         if (n > 0) {
-            for (let i = 0; i < n; i++) addOrbit();
-            this.added += n;
+            if (this.added == 0) { addOrbit(); this.added = 1; }
         } else {
             for (let i = 0; i < this.added; i++) {
                 const o = orbits.pop();

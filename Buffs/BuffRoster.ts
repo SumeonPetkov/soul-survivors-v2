@@ -8,9 +8,9 @@ const BUFF_POOL: (() => Buff)[] = [
     () => new Multishot(),
     () => new Vitality(),
     () => new SwiftBoots(),
-    () => new Magnet(),
+    () => new Wisdom(),
     () => new Critical(),
-    () => new GlassCannon(),
+    () => new HeavyRounds(),
 ];
 
 /** Filler offered when fewer than LEVEL_UP_CHOICES buffs can be picked. */
