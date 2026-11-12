@@ -512,13 +512,16 @@ function findTarget(x: number, y: number, range: number, flyersThroughWalls: boo
 }
 
 function hurtEnemy(e: Sprite, dmg: number) {
-    if (Math.percentChance(player.critChance)) dmg *= player.critMult
+    const crit = Math.percentChance(player.critChance)
+    if (crit) dmg *= player.critMult
     if (player) for (const it of player.perks()) dmg = it.modifyDamageDealt(e, dmg)
     if (boss && e == boss) {
+        showDamageText(e.x, e.top, dmg, crit) // DamageText.ts
         boss.hp -= dmg // Boss.onDeath() runs at 0 hp
         return
     }
     if (getDB(e, "dead")) return
+    showDamageText(e.x, e.top, dmg, crit)
     const hpv = getDN(e, "hp") - dmg
     setDN(e, "hp", hpv)
     if (hpv <= 0) killEnemy(e)

@@ -48,6 +48,7 @@
         "RoomClear.ts",
         "Minimap.ts",
         "main.ts",
+        "DamageText.ts",
         "DevTools.ts",
         "Characters/Napoleon.ts",
         "Enemies.ts",
