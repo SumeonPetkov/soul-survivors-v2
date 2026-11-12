@@ -22,6 +22,8 @@ class Player {
     xpMult: number;
     pickupRange: number;
     maxItemSlots: number;
+    /** Coins carried (spent at vending machines, see Shop.ts). Kept between floors. */
+    coins: number;
 
     constructor(hero: HeroCharacter) {
         this.hero = hero;
@@ -39,6 +41,7 @@ class Player {
         this.critMult = 2;
         this.xpMult = 1;
         this.pickupRange = 50;
+        this.coins = 0;
     }
 
     /** Everything whose hooks run: carried items, then owned buffs. */

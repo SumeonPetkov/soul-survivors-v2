@@ -135,9 +135,11 @@ abstract class Level {
     wallFaceColor = 14;
 
     // ================= ENEMIES (types: T_ constants in Enemies.ts, one entry per type) =================
-    enemyWeights = [32, 38, 20, 10, 0, 0, 0, 0, 0, 0, 0, 0];
+    enemyWeights = [32, 38, 20, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** ms into the floor before each type starts appearing. */
-    enemyUnlockAt = [0, 0, 20000, 45000, 0, 0, 0, 0, 0, 0, 0, 0];
+    enemyUnlockAt = [0, 0, 20000, 45000, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    /** false = no timed waves or swarms; enemies only come from the boss (or rooms). */
+    randomSpawns = true;
     firstSpawnDelay = 1500;
     /** ms between spawn waves at the start; it shrinks over time and per floor. */
     spawnInterval = 1000;
@@ -158,6 +160,10 @@ abstract class Level {
     miniBossAt = [6000];
     /** Room-clearing levels: how many rooms hold a miniboss. */
     miniBossRooms = [1, 2];
+
+    // ================= SHOP (see Shop.ts) =================
+    /** % chance this floor has a vending machine (at most one per floor). */
+    vendingChance = 50;
 
     // ================= BOSS =================
     /** ms into the floor before the boss appears. */

@@ -220,8 +220,9 @@ function isWallAt(x: number, y: number): boolean {
 }
 
 function clearLevel() {
-    const kinds = [SpriteKind.Enemy, SpriteKind.EnemyShot, SpriteKind.Projectile, SpriteKind.Gem, SpriteKind.Pickup, SpriteKind.Portal, SpriteKind.Fx, SpriteKind.Chest]
+    const kinds = [SpriteKind.Enemy, SpriteKind.EnemyShot, SpriteKind.Projectile, SpriteKind.Gem, SpriteKind.Pickup, SpriteKind.Portal, SpriteKind.Fx, SpriteKind.Chest, SpriteKind.Coin, SpriteKind.Vending]
     for (const k of kinds) sprites.destroyAllSpritesOfKind(k)
+    vendingMachine = null
     portal = null
     boss = null
 }
@@ -236,6 +237,7 @@ function setupFloor() {
     miniBossIdx = 0
     buildMinimap()
     hero.setPosition(currentLevel.startCol * 16 + 8, currentLevel.startRow * 16 + 8)
+    setupShop() // map coins + maybe a vending machine (Shop.ts)
     floorTime = 0
     spawnTimer = currentLevel.firstSpawnDelay
     swarmTimer = 0
@@ -244,6 +246,7 @@ function setupFloor() {
     magnetAll = false
     banner("FLOOR " + floorNum + ": " + currentLevel.name, 2500)
     playSong(currentLevel.song) // Music.ts
+    banner(floorNum >= FINAL_FLOOR ? "FINAL FLOOR: " + currentLevel.name : "FLOOR " + floorNum + "/" + FINAL_FLOOR + ": " + currentLevel.name, 2500)
     currentLevel.onStart()
 }
 
@@ -316,7 +319,8 @@ function chestImage(): Image {
     return im
 }
 
-function dropChest(x: number, y: number) {
+/** coins: paid out the first time the chest is opened (see Shop.ts). */
+function dropChest(x: number, y: number, coins = 0) {
     if (isWallAt(x, y)) {
         x = Math.floor(hero.x / 16) * 16 + 8
         y = Math.floor(hero.y / 16) * 16 + 8
@@ -325,6 +329,7 @@ function dropChest(x: number, y: number) {
     c.setPosition(x, y)
     c.z = 2
     setDN(c, "armed", 1)
+    setDN(c, "coins", coins)
     fx(PUFF_IMG, x, y, 250)
     sfx(music.magicWand)
 }
@@ -335,6 +340,12 @@ function isCarried(it: Item): boolean {
 
 /** A chest offers CHEST_CHOICES items: new ones start at Lv1, ones you carry level up. */
 function openChest(c: Sprite) {
+    // coins spill out the first time it's opened
+    const coins = getDN(c, "coins")
+    if (coins > 0) {
+        setDN(c, "coins", 0)
+        burstCoins(c.x, c.y, coins)
+    }
     // the choices are rolled once per chest, so stepping off and on doesn't re-roll them
     let choices: Item[] = c.data["items"]
     if (!choices) {
@@ -523,7 +534,8 @@ function killEnemy(e: Sprite, effects = true) {
     const t = getDN(e, "type")
     kills++
     dropGem(e.x, e.y, E_XP[t])
-    if (getDN(e, "elite") > 0) dropChest(e.x, e.y)
+    if (getDN(e, "elite") > 0) dropChest(e.x, e.y, randint(COINS_MINIBOSS_CHEST[0], COINS_MINIBOSS_CHEST[1]))
+    maybeDropEnemyCoin(e, t)
     if (player) for (const it of player.perks()) it.onKill(e.x, e.y)
     if (Math.percentChance(t == T_OGRE ? 6 : 1.5)) dropPickup(2, e.x - 3, e.y + 2)
     fx(DEATH_IMG, e.x, e.y, 150)
@@ -540,13 +552,20 @@ function bossDefeated(b: Boss) {
     for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
         if (e != b) killEnemy(e, false) // no splitting/reviving once the boss is dead
     }
+    // final floor: beating the boss wins the game (no portal, no chest)
+    if (floorNum >= FINAL_FLOOR) {
+        fx(EXPLO_IMG, b.x, b.y, 400)
+        scene.cameraShake(6, 900)
+        doVictory(b.name)
+        return
+    }
     for (let i = 0; i < b.gemDrops; i++) dropGem(b.x + randint(-12, 12), b.y + randint(-12, 12), 10)
     dropPickup(2, b.x + 10, b.y)
     // chest a little toward the hero, so it isn't on top of the portal
     const cdx = hero.x - b.x
     const cdy = hero.y - b.y
     const cd = Math.sqrt(cdx * cdx + cdy * cdy) + 0.01
-    dropChest(b.x + cdx / cd * 28, b.y + cdy / cd * 28)
+    dropChest(b.x + cdx / cd * 28, b.y + cdy / cd * 28, randint(COINS_BOSS_CHEST[0], COINS_BOSS_CHEST[1]))
     // the boss can die wedged against (or inside) a wall: snap the portal to the
     // nearest floor tile the hero can actually walk to
     const pp = nearestReachableSpot(b.x, b.y)
@@ -726,10 +745,27 @@ function startGame(chosen: HeroCharacter) {
     player = new Player(hero)
     hero.enableMovement()
     scene.cameraFollowSprite(hero)
-    floorNum = 1
+    floorNum = DEV_MODE ? DEV_START_FLOOR : 1 // see config.ts
     setupFloor()
     lastTick = game.runtime()
     started = true
+}
+
+/** The run is won: freeze the game, celebrate, then show the win screen. */
+function doVictory(bossName: string) {
+    started = false
+    controller.moveSprite(hero, 0, 0)
+    hero.vx = 0
+    hero.vy = 0
+    sprites.destroyAllSpritesOfKind(SpriteKind.EnemyShot)
+    banner(bossName.toUpperCase() + " IS DEFEATED!", 3000)
+    sfx(music.powerUp)
+    hero.startEffect(effects.confetti, 2500)
+    control.runInParallel(function () {
+        pause(2500)
+        game.splash("VICTORY! All " + FINAL_FLOOR + " floors cleared", "Lv " + player.level + "  Kills " + kills)
+        game.over(true)
+    })
 }
 
 function doGameOver() {
@@ -961,6 +997,13 @@ game.onUpdate(function () {
     // invulnerability blink
     hero.setFlag(SpriteFlag.Invisible, gameTime < invulnUntil && Math.floor(gameTime / 70) % 2 == 0)
 
+    // orbit blades spin around the hero (added by the Orbit Blades buff and the Orbit Blade item)
+    const n = orbits.length
+    for (let i = 0; i < n; i++) {
+        const a = gameTime / 260 + i * 2 * Math.PI / n
+        orbits[i].setPosition(hero.x + Math.cos(a) * 28, hero.y + Math.sin(a) * 28)
+    }
+
     // (Holy Aura and Lightning now run in their own update() - see Buffs/Buffs.ts)
 
     // magnet
@@ -969,12 +1012,15 @@ game.onUpdate(function () {
     if (gems.length == 0) magnetAll = false
     for (const g of gems) pullToPlayer(g, r2)
     for (const k of sprites.allOfKind(SpriteKind.Pickup)) pullToPlayer(k, r2)
+    for (const k of sprites.allOfKind(SpriteKind.Coin)) pullToPlayer(k, r2)
+    updateShop()
 
     // room clearing: lock rooms on entry, spawn their enemies, unlock when cleared
     updateRoomClear(dt)
 
-    // spawning (timed waves; room-clearing levels spawn per room instead)
-    if (!roomMode && (!bossSpawned || bossAlive)) {
+    // spawning (timed waves; room-clearing levels spawn per room instead,
+    // and levels with randomSpawns = false only get what the boss summons)
+    if (!roomMode && currentLevel.randomSpawns && (!bossSpawned || bossAlive)) {
         spawnTimer -= dt
         if (spawnTimer <= 0) {
             let interval = currentLevel.nextSpawnInterval(floorTime)
@@ -1057,6 +1103,7 @@ scene.createRenderable(100, (t, c) => {
     t.fillRect(1, 1, 56, 10, 15)
     drawBar(t, 3, 3, 52, hero.hp / hero.maxHp, 2, "HP " + hero.hp + "/" + hero.maxHp)
     drawItemBar(t, 1, 12)
+    drawCoinCounter(t, 1, 25) // Shop.ts
     // floor + timer
     let ts = fmtTime(currentLevel.bossSpawnTime - floorTime)
     if (roomMode) ts = roomLocked() ? "CLEAR THE ROOM" : "ROOMS " + roomsCleared() + "/" + roomsTotal()

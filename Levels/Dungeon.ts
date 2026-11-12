@@ -28,9 +28,9 @@ class DungeonLevel extends Level {
         this.wallTopColor = 11;
         this.wallLineColor = 12;
         this.wallFaceColor = 14;
-        // ---- enemies:       slime bat gob ogre skel king wolf spore golem shard imp magma
-        this.enemyWeights =  [25,   25, 15, 8,   20,  7,   0,   0,    0,    0,    0,  0];
-        this.enemyUnlockAt = [0,    0,  20000, 45000, 0, 30000, 0, 0, 0, 0, 0, 0];
+        // ---- enemies:       turtle bat gob ogre skel king wolf spore golem shard imp magma slime
+        this.enemyWeights =  [25,   25, 15, 8,   20,  7,   0,   0,    0,    0,    0,  0, 0];
+        this.enemyUnlockAt = [0,    0,  20000, 45000, 0, 30000, 0, 0, 0, 0, 0, 0, 0];
         // ---- boss
         this.bossSpawnTime = 12000;
     }

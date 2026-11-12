@@ -25,5 +25,8 @@
     "files.exclude": {
         "**/pxt_modules": true,
         "**/.pxt": true
-    }
+    },
+    "VSCodeCounter.exclude": ["**/assets/**", "**/built/**", "**/*.g.ts", "**/*.json", "**/*.jres", "**/*.html", "**/.github/**"]
+
+    
 }
