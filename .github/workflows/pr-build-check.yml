@@ -5,7 +5,9 @@ on:
     branches: [master]
 
 jobs:
-  build:
+  # the job id is the check name GitHub shows (and what the master ruleset requires)
+  pr-build-check:
+    name: pr-build-check
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
