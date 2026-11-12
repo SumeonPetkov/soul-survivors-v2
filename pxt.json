@@ -50,6 +50,7 @@
         "Enemies.ts",
         "Music.ts",
         "main.ts",
+        "DamageText.ts",
         "DevTools.ts",
         "Characters/Napoleon.ts",
         "Shop.ts"

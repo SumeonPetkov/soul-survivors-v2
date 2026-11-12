@@ -18,8 +18,7 @@ class OrbitBlades extends Buff {
         `);
     }
     describe(level: number) { return "Blades spin around you\n" + level + " blade" + (level > 1 ? "s" : "") + ", " + (2 + level) + " dmg"; }
-    // one more blade per level; their damage (2 + level) is read in the Orbit overlap in main.ts
-    apply(n: number) { for (let i = 0; i < n; i++) addOrbit(); }
+    // one blade per level (syncOrbits in main.ts adds them); damage (2 + level) is read in the Orbit overlap in main.ts
 }
 
 class HolyAura extends Buff {
