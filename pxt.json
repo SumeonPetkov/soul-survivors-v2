@@ -47,7 +47,7 @@
         "RoomClear.ts",
         "Minimap.ts",
         "Enemies.ts",
-        "main.ts"
+        "main.ts",
         "DevTools.ts"
     ],
     "testFiles": [
