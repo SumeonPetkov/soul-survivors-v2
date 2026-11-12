@@ -16,7 +16,6 @@
         "BaseClasses/HeroCharacter.ts",
         "Characters/Ninja.ts",
         "Characters/Pirate.ts",
-        "Characters/Napoleon.ts",
         "BaseClasses/Boss.ts",
         "Bosses/CryptDemon.ts",
         "Bosses/ForestFiend.ts",
@@ -46,10 +45,11 @@
         "Fog.ts",
         "RoomClear.ts",
         "Minimap.ts",
-        "Enemies.ts",
-        "Shop.ts",
         "main.ts",
-        "DevTools.ts"
+        "DevTools.ts",
+        "Characters/Napoleon.ts",
+        "Enemies.ts",
+        "Shop.ts"
     ],
     "testFiles": [
         "test.ts"
