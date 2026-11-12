@@ -250,21 +250,6 @@ f 2 5 5 5 5 5 5 5 5 5 5 5 5 4 f
 . . . . f 8 8 8 8 8 8 8 8 8 f . 
 . . . . . f f f f f f f f f . . 
 `;
-            case "image16":
-            case "bat":return img`
-. c . . a a . c . . . . 
-f c . . a f . c . . . . 
-f f . . a . . c . . . . 
-f . . f a . . f . . . . 
-f . . a a . f . . . . . 
-f . . a f . c . f . . . 
-. . . 2 . . a . f . . . 
-. . . a . f c . f . . . 
-. . f 1 . a f . f . . . 
-. . c f . a . . f . . . 
-. . a . . 2 . f . . . . 
-. f c . f a . c . . . . 
-`;
             case "image18":
             case "ogre":return img`
 . . . . . . . . . . . . . . . . 
@@ -390,7 +375,7 @@ f c c f f e e e e e e f f c c f
 ................................................
 `;
             case "image15":
-            case "turtle":return img`
+            case "slime":return img`
 ................................
 ................................
 ...................ff...........
@@ -425,7 +410,7 @@ f c c f f e e e e e e f f c c f
 ................................
 `;
             case "image21":
-            case "slime":return img`
+            case "goblin0":return img`
 ........................
 ........................
 ........................
@@ -486,6 +471,28 @@ fccccf46f6e466446f6f....
 ........................
 ........................
 `;
+            case "image16":
+            case "bat":return img`
+ff............................ff
+.ff.........................fff.
+.fcff.....................ffcf..
+.fcccff.................ffcccf..
+..fccccf...............fccccf...
+..fcccccf.............fcccccf...
+.ffcccccff....fff....ffcccccff..
+ffcfffffcf..ff111ff..fcfffffcff.
+.fccccccccff1111111ffccccccccf..
+..fcccccccf111bbb111fcccccccf...
+..fcccccfff11bbfbb11fffcccccf...
+.fffccffcf11bb1ffbb11fcffccfff..
+....ffcccf11bfffffb11fcccff.....
+......fccf11bbfffbb11fccf.......
+......fcccf11bbfbb11fcccf.......
+.......fccf111bbb111fccf........
+........ff.f1111111f.ff.........
+............ff111ff.............
+..............fff...............
+`;
         }
         return null;
     })
@@ -510,12 +517,6 @@ fccccf46f6e466446f6f....
         }
         return null;
     })
-
-}
-// Auto-generated code. Do not edit.
-
-// Auto-generated code. Do not edit.
-namespace myTiles {
 
 }
 // Auto-generated code. Do not edit.
