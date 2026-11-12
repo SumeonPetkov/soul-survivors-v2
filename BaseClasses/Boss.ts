@@ -151,7 +151,7 @@ abstract class Boss extends Character implements ICharacter {
         enemyShoot(this, Math.atan2(target.y - this.y, target.x - this.x), speed);
     }
 
-    /** Spawns `count` regular enemies of `enemyType` (0 slime, 1 bat, 2 goblin, 3 ogre) nearby. */
+    /** Spawns `count` regular enemies of `enemyType` (a T_ id from Enemies/EnemyRoster.ts) nearby. */
     protected summon(enemyType: number, count: number, radius = 30) {
         for (let i = 0; i < count; i++) {
             const x = this.x + randint(-radius, radius);

@@ -38,7 +38,7 @@ class Bulut extends Boss implements ICharacter {
 
     constructor(floor: number) {
         //    id       name     floor  hp                      speed
-        super("bulut", "Bulut", floor, 2500 + 120 * floor, 22, getImage("myImage12"));
+        super("bulut", "Bulut", floor, 6000, 22, getImage("myImage12"));
         this.spawnPoint = BossSpawn.MapCenter;
         this.contactDamage = 3;
         this.firstAttackDelay = 2000;
@@ -68,8 +68,8 @@ class Bulut extends Boss implements ICharacter {
         if (step == 0) this.ringBurst(16, 50, this.attackCount * 0.25);
         else if (step == 1) this.aimedFan(target, 7, 0.16, 85);
         else if (step == 2) {
-            this.summon(T_WOLF, 2, 40);
-            this.summon(T_FIRE_IMP, 1, 40);
+            this.summon(T_WOLF, 4, 40);
+            this.summon(T_FIRE_IMP, 3, 40);
         } else this.startCharge(target, 1);
     }
 
@@ -79,8 +79,8 @@ class Bulut extends Boss implements ICharacter {
         else if (step == 1) this.meteorRain(5, 0);
         else if (step == 2) this.aimedFan(target, 9, 0.14, 90);
         else if (step == 3) {
-            this.summon(T_WOLF, 2, 40);
-            this.summon(T_ICE_GOLEM, 1, 40);
+            this.summon(T_WOLF, 6, 40);
+            this.summon(T_ICE_GOLEM, 5, 40);
         } else this.startCharge(target, 1);
     }
 
@@ -92,8 +92,8 @@ class Bulut extends Boss implements ICharacter {
             this.aimedFan(target, 5, 0.2, 95);
         } else if (step == 2) this.startCharge(target, 3);
         else if (step == 3) {
-            this.summon(T_FIRE_IMP, 2, 40);
-            this.summon(T_SKELETON, 2, 40);
+            this.summon(T_FIRE_IMP, 8, 40);
+            this.summon(T_SKELETON, 8, 40);
         } else {
             const off = this.attackCount * 0.25;
             this.ringBurst(18, 55, off);

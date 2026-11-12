@@ -134,10 +134,12 @@ abstract class Level {
     wallLineColor = 12;
     wallFaceColor = 14;
 
-    // ================= ENEMIES (types: T_ constants in Enemies.ts, one entry per type) =================
-    enemyWeights = [32, 38, 20, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    // ================= ENEMIES (T_ ids from Enemies/EnemyRoster.ts) =================
+    // Fill these with addEnemy(type, weight, unlockAt) in the level's constructor.
+    enemyTypes: number[] = [];
+    enemyWeights: number[] = [];
     /** ms into the floor before each type starts appearing. */
-    enemyUnlockAt = [0, 0, 20000, 45000, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+    enemyUnlockAt: number[] = [];
     /** false = no timed waves or swarms; enemies only come from the boss (or rooms). */
     randomSpawns = true;
     firstSpawnDelay = 1500;
@@ -147,12 +149,12 @@ abstract class Level {
     extraPerWave = 0;
     /** Swarm: a ring of enemies around the hero every swarmEvery ms (0 = off). */
     swarmEvery = 25000;
-    swarmEnemy = 1;
+    swarmEnemy = T_BAT;
     swarmSize = 14;
 
     // ================= MINIBOSSES (drop a chest with an item) =================
-    /** Enemy type used for minibosses (a T_ constant from Enemies.ts). */
-    miniBossEnemy = 3;
+    /** Enemy type used for minibosses (a T_ id from Enemies/EnemyRoster.ts). */
+    miniBossEnemy = T_OGRE;
     miniBossHpMult = 8;
     /** Size multiplier of the sprite. */
     miniBossScale = 1.5;
@@ -615,20 +617,30 @@ abstract class Level {
     // Enemy spawning (used by main.ts)
     // =====================================================================
 
-    /** Picks an enemy type from enemyWeights, ignoring types not unlocked yet. */
+    /**
+     * Adds an enemy to this level's random spawns.
+     * weight: how common it is compared to the others; unlockAt: ms into the floor before it appears.
+     */
+    protected addEnemy(type: number, weight: number, unlockAt = 0) {
+        this.enemyTypes.push(type);
+        this.enemyWeights.push(weight);
+        this.enemyUnlockAt.push(unlockAt);
+    }
+
+    /** Picks an enemy type from the addEnemy list, ignoring types not unlocked yet. */
     pickEnemy(floorTime: number): number {
         let total = 0;
         for (let i = 0; i < this.enemyWeights.length; i++) {
             if (floorTime >= this.enemyUnlockAt[i]) total += this.enemyWeights[i];
         }
-        if (total <= 0) return 0;
+        if (total <= 0) return T_TURTLE;
         let roll = randint(0, total - 1);
         for (let i = 0; i < this.enemyWeights.length; i++) {
             if (floorTime < this.enemyUnlockAt[i]) continue;
             roll -= this.enemyWeights[i];
-            if (roll < 0) return i;
+            if (roll < 0) return this.enemyTypes[i];
         }
-        return 0;
+        return T_TURTLE;
     }
 
     /** ms until the next spawn wave. */

@@ -50,8 +50,22 @@
         "main.ts",
         "DevTools.ts",
         "Characters/Napoleon.ts",
-        "Enemies.ts",
-        "Shop.ts"
+        "Shop.ts",
+        "BaseClasses/EnemyType.ts",
+        "Enemies/Turtle.ts",
+        "Enemies/Bat.ts",
+        "Enemies/Goblin.ts",
+        "Enemies/Ogre.ts",
+        "Enemies/Skeleton.ts",
+        "Enemies/SlimeKing.ts",
+        "Enemies/Wolf.ts",
+        "Enemies/SporePod.ts",
+        "Enemies/IceGolem.ts",
+        "Enemies/IceShard.ts",
+        "Enemies/FireImp.ts",
+        "Enemies/MagmaSlime.ts",
+        "Enemies/Slime.ts",
+        "Enemies/EnemyRoster.ts"
     ],
     "testFiles": [
         "test.ts"
