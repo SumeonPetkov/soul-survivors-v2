@@ -11,5 +11,7 @@ _site
 .header.json
 .simstate.json
 
+# VS Code Counter reports
+.VSCodeCounter
 # compiled game - the Pages workflow builds it fresh on deploy
 assets/js/binary.js
