@@ -242,7 +242,7 @@ function setupFloor() {
     bossSpawned = false
     bossAlive = false
     magnetAll = false
-    banner("FLOOR " + floorNum + ": " + currentLevel.name, 2500)
+    banner(floorNum >= FINAL_FLOOR ? "FINAL FLOOR: " + currentLevel.name : "FLOOR " + floorNum + "/" + FINAL_FLOOR + ": " + currentLevel.name, 2500)
     currentLevel.onStart()
 }
 
@@ -537,6 +537,13 @@ function bossDefeated(b: Boss) {
     for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
         if (e != b) killEnemy(e, false) // no splitting/reviving once the boss is dead
     }
+    // final floor: beating the boss wins the game (no portal, no chest)
+    if (floorNum >= FINAL_FLOOR) {
+        fx(EXPLO_IMG, b.x, b.y, 400)
+        scene.cameraShake(6, 900)
+        doVictory(b.name)
+        return
+    }
     for (let i = 0; i < b.gemDrops; i++) dropGem(b.x + randint(-12, 12), b.y + randint(-12, 12), 10)
     dropPickup(2, b.x + 10, b.y)
     // chest a little toward the hero, so it isn't on top of the portal
@@ -723,10 +730,27 @@ function startGame(chosen: HeroCharacter) {
     player = new Player(hero)
     hero.enableMovement()
     scene.cameraFollowSprite(hero)
-    floorNum = 1
+    floorNum = DEV_MODE ? DEV_START_FLOOR : 1 // see config.ts
     setupFloor()
     lastTick = game.runtime()
     started = true
+}
+
+/** The run is won: freeze the game, celebrate, then show the win screen. */
+function doVictory(bossName: string) {
+    started = false
+    controller.moveSprite(hero, 0, 0)
+    hero.vx = 0
+    hero.vy = 0
+    sprites.destroyAllSpritesOfKind(SpriteKind.EnemyShot)
+    banner(bossName.toUpperCase() + " IS DEFEATED!", 3000)
+    sfx(music.powerUp)
+    hero.startEffect(effects.confetti, 2500)
+    control.runInParallel(function () {
+        pause(2500)
+        game.splash("VICTORY! All " + FINAL_FLOOR + " floors cleared", "Lv " + player.level + "  Kills " + kills)
+        game.over(true)
+    })
 }
 
 function doGameOver() {
@@ -969,8 +993,9 @@ game.onUpdate(function () {
     // room clearing: lock rooms on entry, spawn their enemies, unlock when cleared
     updateRoomClear(dt)
 
-    // spawning (timed waves; room-clearing levels spawn per room instead)
-    if (!roomMode && (!bossSpawned || bossAlive)) {
+    // spawning (timed waves; room-clearing levels spawn per room instead,
+    // and levels with randomSpawns = false only get what the boss summons)
+    if (!roomMode && currentLevel.randomSpawns && (!bossSpawned || bossAlive)) {
         spawnTimer -= dt
         if (spawnTimer <= 0) {
             let interval = currentLevel.nextSpawnInterval(floorTime)
