@@ -2,13 +2,13 @@ class DungeonLevel extends Level {
     constructor(floor: number) {
         super("Dungeon", floor);
         // ---- world generation: rolled fresh every time the floor starts ----
-        // hand-drawn rooms from Rooms/DungeonRooms.ts, joined by corridors
+        // randomly generated rooms (WorldGen/RoomShapes.ts), joined by corridors
         this.layouts = [LevelLayout.RoomDungeon];
         this.layoutWeights = [1];
         this.roomSet = "dungeon";
         this.roomGridCols = [3, 4];
         this.roomGridRows = [3, 4];
-        this.roomCellSize = 16;
+        this.roomCellSize = 20;
         this.corridorWidth = [2, 2];
         this.extraConnections = [15, 30];
         this.emptyCellChance = [0, 10];

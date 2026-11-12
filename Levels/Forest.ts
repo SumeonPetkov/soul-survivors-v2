@@ -7,8 +7,6 @@ class ForestLevel extends Level {
         this.shapes = [MapShape.Blob, MapShape.Oval, MapShape.Rectangle];
         this.shapeWeights = [5, 3, 2];
         this.edgeRoughness = [10, 25];
-        this.layouts = [LevelLayout.Pillars, LevelLayout.Open, LevelLayout.Blocks];
-        this.layoutWeights = [6, 2, 2];
         this.pillarSpacing = [3, 4];
         this.pillarChance = [40, 65];
         this.blockCount = [10, 14];

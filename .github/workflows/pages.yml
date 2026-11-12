@@ -18,7 +18,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      # must come first: the workspace is empty until the repo is checked out
       - uses: actions/checkout@v5
+
+      # the deployed game never has dev tools, whatever config.ts says
+      - name: Disable dev mode
+        run: |
+          if grep -q "const DEV_MODE = true" config.ts; then
+            sed -i 's/const DEV_MODE = true/const DEV_MODE = false/' config.ts
+            echo "DEV_MODE set to false"
+          else
+            echo "::warning::DEV_MODE = true not found in config.ts - nothing to disable"
+          fi
 
       - uses: actions/setup-node@v6
         with:
