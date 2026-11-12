@@ -14,6 +14,7 @@ const MINIMAP_ENEMY = 2;
 const MINIMAP_BOSS = 10;
 const MINIMAP_PORTAL = 5;
 const MINIMAP_CHEST = 4;
+const MINIMAP_VENDING = 9;
 /** With fog of war: unexplored areas and explored floor. */
 const MINIMAP_UNKNOWN = 15;
 const MINIMAP_FOG_FLOOR = 12;
@@ -67,6 +68,8 @@ function drawMinimap(screen: Image, x0: number, y0: number) {
     for (const ch of sprites.allOfKind(SpriteKind.Chest)) {
         if (fogTileSeen(Math.floor(ch.x / 16), Math.floor(ch.y / 16))) _minimapDot(box, ch.x, ch.y, ox, oy, 3, MINIMAP_CHEST);
     }
+    const vm = vendingMachine;
+    if (vm && fogTileSeen(Math.floor(vm.x / 16), Math.floor(vm.y / 16))) _minimapDot(box, vm.x, vm.y, ox, oy, 3, MINIMAP_VENDING);
     for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
         if (boss && e == boss) continue;
         if (!fogVisibleAt(e.x, e.y)) continue;
