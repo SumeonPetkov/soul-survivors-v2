@@ -1,6 +1,7 @@
 class ForestLevel extends Level {
     constructor(floor: number) {
         super("Forest", floor);
+        this.song = SONG_FOREST; // "Overgrown Halls" (Music.ts)
         // ---- world generation: rolled fresh every time the floor starts ----
         this.widthRange = [34, 40];
         this.heightRange = [34, 40];
