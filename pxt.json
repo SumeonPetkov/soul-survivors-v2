@@ -47,11 +47,12 @@
         "Fog.ts",
         "RoomClear.ts",
         "Minimap.ts",
+        "Enemies.ts",
+        "Music.ts",
         "main.ts",
         "DamageText.ts",
         "DevTools.ts",
         "Characters/Napoleon.ts",
-        "Enemies.ts",
         "Shop.ts"
     ],
     "testFiles": [

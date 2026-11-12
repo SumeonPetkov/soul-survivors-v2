@@ -244,6 +244,8 @@ function setupFloor() {
     bossSpawned = false
     bossAlive = false
     magnetAll = false
+    banner("FLOOR " + floorNum + ": " + currentLevel.name, 2500)
+    playSong(currentLevel.song) // Music.ts
     banner(floorNum >= FINAL_FLOOR ? "FINAL FLOOR: " + currentLevel.name : "FLOOR " + floorNum + "/" + FINAL_FLOOR + ": " + currentLevel.name, 2500)
     currentLevel.onStart()
 }
@@ -449,6 +451,7 @@ function spawnRing() {
 function spawnBoss() {
     bossSpawned = true
     bossAlive = true
+    playSong(SONG_BOSS)
     boss = currentLevel.createBoss()
     const pos = boss.spawnPosition()
     boss.setPosition(pos[0], pos[1])
@@ -546,6 +549,7 @@ function killEnemy(e: Sprite, effects = true) {
 function bossDefeated(b: Boss) {
     bossAlive = false
     boss = null
+    playSong(currentLevel.song) // back to the level's song
     kills++
     sprites.destroyAllSpritesOfKind(SpriteKind.EnemyShot)
     for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
@@ -798,6 +802,7 @@ function doGameOver() {
         e.vx = 0
         e.vy = 0
     }
+    stopSong()
     sfx(music.wawawawaa)
     hero.startEffect(effects.fire, 800)
     control.runInParallel(function () {
@@ -1190,5 +1195,6 @@ function startHeroSelect() {
 }
 
 scene.setBackgroundColor(15)
+playSong(SONG_DUNGEON) // title + hero select; floor 1 keeps it going
 game.splash("SOUL SURVIVORS", "Soul Knight x Survivors")
 startHeroSelect()

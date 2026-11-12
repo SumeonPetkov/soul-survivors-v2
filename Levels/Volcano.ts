@@ -1,6 +1,7 @@
 class VolcanoLevel extends Level {
     constructor(floor: number) {
         super("Volcano", floor);
+        this.song = SONG_VOLCANO; // "Magma Forge" (Music.ts)
         // ---- world generation: rolled fresh every time the floor starts ----
         this.widthRange = [32, 38];
         this.heightRange = [32, 38];
