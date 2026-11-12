@@ -39,13 +39,7 @@ const MAX_SHOTS = 70
 // Levels live in Levels/ (order in Levels/LevelRoster.ts); each picks its own boss from Bosses/.
 
 // ---------------- ENEMIES ----------------
-// 0 slime, 1 bat, 2 goblin shooter, 3 ogre
-const E_HP = [3, 2, 4, 14]
-const E_SPD = [26, 46, 20, 16]
-const E_DMG = [1, 1, 1, 2]
-const E_XP = [1, 1, 2, 5]
-// flyers pass over walls; everything else is blocked by them and pathfinds around
-const E_FLY = [false, true, false, false]
+// Enemy types, stats, sprites and death effects live in Enemies.ts.
 
 // ---------------- ART ----------------
 const GEM_G = img`
@@ -63,7 +57,6 @@ const HEART = img`
 ..222..
 ...2...
 `
-const E_IMG: Image[] = ["slime", "bat", "goblin", "ogre"].map(getImage)
 
 const GEM_B = GEM_G.clone()
 GEM_B.replace(7, 9)
@@ -521,7 +514,8 @@ function hurtEnemy(e: Sprite, dmg: number) {
     if (hpv <= 0) killEnemy(e)
 }
 
-function killEnemy(e: Sprite) {
+/** effects = false skips death effects (splitting, reviving, shot bursts), e.g. on boss defeat. */
+function killEnemy(e: Sprite, effects = true) {
     if (getDB(e, "dead")) return
     setDB(e, "dead", true)
     const t = getDN(e, "type")
@@ -529,8 +523,9 @@ function killEnemy(e: Sprite) {
     dropGem(e.x, e.y, E_XP[t])
     if (getDN(e, "elite") > 0) dropChest(e.x, e.y)
     if (player) for (const it of player.perks()) it.onKill(e.x, e.y)
-    if (Math.percentChance(t == 3 ? 6 : 1.5)) dropPickup(2, e.x - 3, e.y + 2)
+    if (Math.percentChance(t == T_OGRE ? 6 : 1.5)) dropPickup(2, e.x - 3, e.y + 2)
     fx(DEATH_IMG, e.x, e.y, 150)
+    if (effects) enemyDeathEffects(e, t) // see Enemies.ts
     e.destroy()
 }
 
@@ -540,7 +535,7 @@ function bossDefeated(b: Boss) {
     kills++
     sprites.destroyAllSpritesOfKind(SpriteKind.EnemyShot)
     for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
-        if (e != b) killEnemy(e)
+        if (e != b) killEnemy(e, false) // no splitting/reviving once the boss is dead
     }
     for (let i = 0; i < b.gemDrops; i++) dropGem(b.x + randint(-12, 12), b.y + randint(-12, 12), 10)
     dropPickup(2, b.x + 10, b.y)
@@ -839,19 +834,45 @@ game.onUpdateInterval(100, function () {
         let spd = getDN(e, "spd")
         const stunned = getDN(e, "stun") > gameTime
         if (stunned) spd = 0
-        if (E_FLY[t] || (t == 2 && d < 55)) {
-            // flyers go straight; goblins back away when too close
-            if (t == 2 && d < 55) spd = -spd * 0.7
+
+        // wolves: every few seconds, charge straight at the hero
+        if (t == T_WOLF && !stunned) {
+            if (getDN(e, "dash") > gameTime) continue // mid-charge: keep the charge velocity
+            let cd = getDN(e, "cd") - 100
+            if (cd <= 0 && d < 110) {
+                e.vx = dx / d * spd * 4
+                e.vy = dy / d * spd * 4
+                setDN(e, "dash", gameTime + 400)
+                setDN(e, "cd", 2200)
+                continue
+            }
+            setDN(e, "cd", cd)
+        }
+
+        // shooters back away when the hero gets close
+        const keepAway = isShooterType(t) && d < (t == T_FIRE_IMP ? 70 : 55)
+        if (E_FLY[t] || keepAway) {
+            // flyers go straight
+            if (keepAway) spd = -spd * 0.7
             e.vx = dx / d * spd
             e.vy = dy / d * spd
         } else {
             walkTowardHero(e, spd)
             if (!stunned && unstickWalker(e)) continue
         }
-        if (t == 2 && !stunned) {
+
+        // shooters: goblins fire one shot, fire imps a 3-shot spread
+        if (isShooterType(t) && !stunned) {
             let cd = getDN(e, "cd") - 100
             if (cd <= 0) {
-                if (d < 120) enemyShoot(e, Math.atan2(dy, dx), 70)
+                if (d < 120) {
+                    const a = Math.atan2(dy, dx)
+                    if (t == T_FIRE_IMP) {
+                        for (let k = -1; k <= 1; k++) enemyShoot(e, a + k * 0.3, 65)
+                    } else {
+                        enemyShoot(e, a, 70)
+                    }
+                }
                 cd = Math.max(1400, 2600 - floorNum * 100)
             }
             setDN(e, "cd", cd)

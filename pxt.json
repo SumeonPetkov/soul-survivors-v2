@@ -46,7 +46,8 @@
         "Fog.ts",
         "RoomClear.ts",
         "Minimap.ts",
-        "main.ts",
+        "Enemies.ts",
+        "main.ts"
         "DevTools.ts"
     ],
     "testFiles": [
