@@ -11,7 +11,7 @@ class NinjaCharacter extends HeroCharacter implements ICharacterWithAbility {
 
     attack(target: Sprite): void {
         // one piercing star (+ Multishot upgrade)          count spread jitter speed dmg life pierce
-        this.shootSpread(this.shuriken, this.aimAt(target), 1, 0, 0.05, 170, 1, 600, 1);
+        this.shootSpread(this.shuriken, this.aimAt(target), 1, 0, 0.05, 170, 2.5, 600, 1);
     }
 
     useAbility(): void {

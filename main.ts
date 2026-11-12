@@ -33,136 +33,13 @@ const MAX_SHOTS = 70
 // Heroes are classes in Characters/. Add new ones to the roster in startHeroSelect().
 
 // ---------------- UPGRADES ----------------
-// the last entry (Feast) is the filler offered when everything else is maxed
-const U_NAME = ["Orbit Blades", "Holy Aura", "Lightning", "Power", "Haste", "Multishot", "Vitality", "Swift Boots", "Magnet", "Critical", "Feast"]
-const U_DESC = ["Blades spin around you", "Burn nearby enemies", "Smite random foes", "+20% damage", "+15% fire rate", "+1 bullet per shot", "+2 max HP, heal 2", "+10% move speed", "+50% pickup range", "+8% crit chance", "Heal 50% HP"]
-const U_MAX = [5, 5, 5, 8, 8, 3, 5, 5, 4, 5, 99]
-// 10x10 icons for the item bar, same order as U_NAME (Feast has none - it's instant)
-const BUFF_ICONS = [
-    img`
-        . . . . 1 1 . . . .
-        . . . 1 d d 1 . . .
-        . . 1 d . . d 1 . .
-        . 1 d . . . . d 1 .
-        1 d . . 5 5 . . d 1
-        1 d . . 5 5 . . d 1
-        . 1 d . . . . d 1 .
-        . . 1 d . . d 1 . .
-        . . . 1 d d 1 . . .
-        . . . . 1 1 . . . .
-    `, img`
-        . . . . 4 . . . . .
-        . . . 4 4 . . . . .
-        . . . 4 5 4 . . . .
-        . . 4 5 5 4 . 4 . .
-        . . 4 5 5 5 4 . . .
-        . 4 4 5 5 5 4 4 . .
-        . 4 5 5 5 5 5 4 . .
-        . 4 5 5 1 5 5 4 . .
-        . . 4 5 5 5 4 . . .
-        . . . 4 4 4 . . . .
-    `, img`
-        . . . . . 5 5 5 . .
-        . . . . 5 5 5 . . .
-        . . . 5 5 5 . . . .
-        . . 5 5 5 . . . . .
-        . 5 5 5 5 5 5 5 . .
-        . . . . . 5 5 5 . .
-        . . . . 5 5 5 . . .
-        . . . 5 5 5 . . . .
-        . . 5 5 . . . . . .
-        . 5 . . . . . . . .
-    `, img`
-        . . . . . . . . 1 1
-        . . . . . . . 1 d 1
-        . . . . . . 1 d 1 .
-        . . . . . 1 d 1 . .
-        . . . . 1 d 1 . . .
-        . e . 1 d 1 . . . .
-        . . e 1 1 . . . . .
-        . . e e . . . . . .
-        . e . . e . . . . .
-        e . . . . . . . . .
-    `, img`
-        . . . . . . . . . .
-        . 9 . . . . 9 . . .
-        . 9 9 . . . 9 9 . .
-        . 9 9 9 . . 9 9 9 .
-        . 9 9 9 9 . 9 9 9 9
-        . 9 9 9 9 . 9 9 9 9
-        . 9 9 9 . . 9 9 9 .
-        . 9 9 . . . 9 9 . .
-        . 9 . . . . 9 . . .
-        . . . . . . . . . .
-    `, img`
-        . . . . . . . . . 5
-        . . . . . . . 5 5 .
-        . . . . . 5 5 . . .
-        . . . 5 5 . . . . .
-        . 5 5 5 5 5 5 5 5 5
-        . . . 5 5 . . . . .
-        . . . . . 5 5 . . .
-        . . . . . . . 5 5 .
-        . . . . . . . . . 5
-        . . . . . . . . . .
-    `, img`
-        . . . . . . . . . .
-        . 2 2 . . . 2 2 . .
-        2 2 2 2 . 2 2 2 2 .
-        2 2 1 2 2 2 2 2 2 .
-        2 2 2 2 2 2 2 2 2 .
-        . 2 2 2 2 2 2 2 . .
-        . . 2 2 2 2 2 . . .
-        . . . 2 2 2 . . . .
-        . . . . 2 . . . . .
-        . . . . . . . . . .
-    `, img`
-        . . e e e e . . . .
-        . . e e e e . . . .
-        . . e e e e . . . .
-        . . e e e e . . . .
-        . . e e e e . . . .
-        . . e e e e e . . .
-        . . e e e e e e e .
-        . . e e e e e e e .
-        . . d d d d d d d .
-        . . . . . . . . . .
-    `, img`
-        . . . . . . . . . .
-        . 1 1 . . . . 1 1 .
-        . 2 2 . . . . 2 2 .
-        . 2 2 . . . . 2 2 .
-        . 2 2 . . . . 2 2 .
-        . 2 2 . . . . 2 2 .
-        . 2 2 2 . . 2 2 2 .
-        . . 2 2 2 2 2 2 . .
-        . . . 2 2 2 2 . . .
-        . . . . . . . . . .
-    `, img`
-        . . . . 2 . . . . .
-        . . 2 2 2 2 2 . . .
-        . 2 . . 2 . . 2 . .
-        . 2 . . 2 . . 2 . .
-        2 2 2 2 . 2 2 2 2 .
-        . 2 . . 2 . . 2 . .
-        . 2 . . 2 . . 2 . .
-        . . 2 2 2 2 2 . . .
-        . . . . 2 . . . . .
-        . . . . . . . . . .
-    `,
-]
+// Level-up buffs are classes in Buffs/Buffs.ts (offered from BUFF_POOL in Buffs/BuffRoster.ts).
 
 // ---------------- LEVELS ----------------
 // Levels live in Levels/ (order in Levels/LevelRoster.ts); each picks its own boss from Bosses/.
 
 // ---------------- ENEMIES ----------------
-// 0 slime, 1 bat, 2 goblin shooter, 3 ogre
-const E_HP = [3, 2, 4, 14]
-const E_SPD = [26, 46, 20, 16]
-const E_DMG = [1, 1, 1, 2]
-const E_XP = [1, 1, 2, 5]
-// flyers pass over walls; everything else is blocked by them and pathfinds around
-const E_FLY = [false, true, false, false]
+// Enemy types, stats, sprites and death effects live in Enemies.ts.
 
 // ---------------- ART ----------------
 const GEM_G = img`
@@ -180,7 +57,6 @@ const HEART = img`
 ..222..
 ...2...
 `
-const E_IMG: Image[] = ["slime", "bat", "goblin", "ogre"].map(getImage)
 
 const GEM_B = GEM_G.clone()
 GEM_B.replace(7, 9)
@@ -271,7 +147,6 @@ const PORTAL_B = makePortal(9, 10)
 let started = false
 let hero: HeroCharacter = null
 let player: Player = null
-let aura: Sprite = null
 let boss: Boss = null
 let currentLevel: Level = null
 let portal: Sprite = null
@@ -287,8 +162,6 @@ let fireTimer = 0
 let invulnUntil = 0
 let spawnTimer = 0
 let swarmTimer = 0
-let auraTimer = 0
-let boltTimer = 0
 let aimAngle = 0
 let menuOpen = false
 let wantNextFloor = false
@@ -392,6 +265,7 @@ function findSpawn(): number[] {
 function initEnemy(e: Sprite, t: number, hpv: number, spd: number) {
     setDN(e, "type", t)
     setDN(e, "hp", hpv)
+    setDN(e, "maxhp", hpv)
     setDN(e, "spd", spd)
     setDN(e, "cd", randint(800, 2500))
     setDN(e, "stun", 0)
@@ -417,6 +291,7 @@ function spawnMiniBoss(x: number, y: number): Sprite {
     const lv = currentLevel
     const e = spawnEnemyAt(lv.miniBossEnemy, x, y, true)
     setDN(e, "hp", getDN(e, "hp") * lv.miniBossHpMult)
+    setDN(e, "maxhp", getDN(e, "hp"))
     setDN(e, "elite", 1)
     e.scale = lv.miniBossScale
     fx(PUFF_IMG, x, y, 300)
@@ -474,7 +349,7 @@ function openChest(c: Sprite) {
         c.destroy()
         return
     }
-    const full = player.items.length >= ITEM_SLOTS
+    const full = player.items.length >= player.maxItemSlots 
     const names: string[] = []
     const descs: string[] = []
     const icons: Image[] = []
@@ -514,24 +389,33 @@ function openChest(c: Sprite) {
 
 /** Items full: pick which carried item the new one replaces. */
 function chooseSwap(c: Sprite, it: Item) {
+    // only droppable items are offered; slot[k] = index in player.items of menu row k
+    const slot: number[] = []
     const names: string[] = []
     const descs: string[] = []
     const icons: Image[] = []
-    for (const old of player.items) {
+    for (let k = 0; k < player.items.length; k++) {
+        const old = player.items[k]
+        if (old.undroppable) continue
+        slot.push(k)
         names.push("Drop " + old.name + " Lv" + old.level)
         descs.push("(" + old.describe(old.level) + ")")
         icons.push(old.icon)
+    }
+    if (slot.length == 0) {
+        banner("YOUR ITEMS CAN'T BE DROPPED", 1500)
+        return
     }
     names.push("Cancel")
     descs.push("Keep your items")
     icons.push(null)
     openMenu("TAKE " + it.name.toUpperCase() + "?", names, descs, it.name + ": " + it.describe(1), function (i: number) {
-        if (i >= player.items.length) return
-        const old = player.items[i]
-        player.replaceItem(i, it)
+        if (i >= slot.length) return
+        const old = player.items[slot[i]]
+        player.replaceItem(slot[i], it)
         banner("SWAPPED " + old.name.toUpperCase(), 1500)
         sfx(music.powerUp)
-        c.destroy()
+        if (c) c.destroy() // null when called from the dev menu
     }, icons)
 }
 
@@ -618,7 +502,8 @@ function findTarget(x: number, y: number, range: number, flyersThroughWalls: boo
 }
 
 function hurtEnemy(e: Sprite, dmg: number) {
-    if (Math.percentChance(player.critChance)) dmg *= 2
+    if (Math.percentChance(player.critChance)) dmg *= player.critMult
+    if (player) for (const it of player.perks()) dmg = it.modifyDamageDealt(e, dmg)
     if (boss && e == boss) {
         boss.hp -= dmg // Boss.onDeath() runs at 0 hp
         return
@@ -629,16 +514,18 @@ function hurtEnemy(e: Sprite, dmg: number) {
     if (hpv <= 0) killEnemy(e)
 }
 
-function killEnemy(e: Sprite) {
+/** effects = false skips death effects (splitting, reviving, shot bursts), e.g. on boss defeat. */
+function killEnemy(e: Sprite, effects = true) {
     if (getDB(e, "dead")) return
     setDB(e, "dead", true)
     const t = getDN(e, "type")
     kills++
     dropGem(e.x, e.y, E_XP[t])
     if (getDN(e, "elite") > 0) dropChest(e.x, e.y)
-    if (player) for (const it of player.items) it.onKill(e.x, e.y)
-    if (Math.percentChance(t == 3 ? 6 : 1.5)) dropPickup(2, e.x - 3, e.y + 2)
+    if (player) for (const it of player.perks()) it.onKill(e.x, e.y)
+    if (Math.percentChance(t == T_OGRE ? 6 : 1.5)) dropPickup(2, e.x - 3, e.y + 2)
     fx(DEATH_IMG, e.x, e.y, 150)
+    if (effects) enemyDeathEffects(e, t) // see Enemies.ts
     e.destroy()
 }
 
@@ -648,7 +535,7 @@ function bossDefeated(b: Boss) {
     kills++
     sprites.destroyAllSpritesOfKind(SpriteKind.EnemyShot)
     for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
-        if (e != b) killEnemy(e)
+        if (e != b) killEnemy(e, false) // no splitting/reviving once the boss is dead
     }
     for (let i = 0; i < b.gemDrops; i++) dropGem(b.x + randint(-12, 12), b.y + randint(-12, 12), 10)
     dropPickup(2, b.x + 10, b.y)
@@ -722,7 +609,7 @@ function pullToPlayer(g: Sprite, r2: number) {
 function hurtPlayer(d: number) {
     if (gameTime < invulnUntil || wantGameOver || !started) return
     invulnUntil = gameTime + 800
-    for (const it of player.items) d = it.modifyDamageTaken(d)
+    for (const it of player.perks()) d = it.modifyDamageTaken(d)
     if (d <= 0) {
         sfx(music.zapped) // blocked
         return
@@ -739,36 +626,6 @@ function addOrbit() {
     orbits.push(o)
 }
 
-function auraRadius(): number {
-    return 20 + player.upgrades[1] * 5
-}
-
-function refreshAura() {
-    if (!aura) {
-        aura = sprites.create(image.create(2, 2), SpriteKind.Attach)
-        aura.setFlag(SpriteFlag.Ghost, true)
-        aura.z = 1
-    }
-    aura.setImage(makeRing(auraRadius(), 5, 4))
-}
-
-function applyUpgrade(id: number) {
-    player.upgrades[id]++
-    if (id == 0) addOrbit()
-    else if (id == 1) refreshAura()
-    else if (id == 3) player.dmgMult += 0.2
-    else if (id == 4) player.rateMult += 0.15
-    else if (id == 5) player.multishot++
-    else if (id == 6) {
-        hero.maxHp += 2
-        hero.heal(2)
-    } else if (id == 7) {
-        hero.speed = Math.floor(hero.speed * 1.1)
-        hero.enableMovement()
-    } else if (id == 8) player.pickupRange *= 1.5
-    else if (id == 9) player.critChance += 8
-    else if (id == 10) hero.heal(Math.ceil(hero.maxHp / 2))
-}
 
 // ---------------- MENUS ----------------
 // Menus must not push their scene in the middle of a frame. The engine updates sprites
@@ -812,7 +669,13 @@ function _showMenu(title: string, names: string[], descs: string[], footer: stri
                 tx = 24
             }
             t.print(names[i], tx, y + pad, on ? 5 : 1, image.font8)
-            t.print(descs[i], tx, y + pad + 10, on ? 1 : 11, image.font5)
+            // a description can have several lines separated by "\n"
+            if (descs[i]) {
+                const lines = descs[i].split("\n")
+                for (let j = 0; j < lines.length; j++) {
+                    t.print(lines[j], tx, y + pad + 10 + j * 7, on ? 1 : 11, image.font5)
+                }
+            }
         }
         printC(t, footer, SH - 9, 11, image.font5)
     })
@@ -830,33 +693,28 @@ function _showMenu(title: string, names: string[], descs: string[], footer: stri
 }
 
 function showLevelUp() {
-    const pool: number[] = []
-    const FEAST = U_NAME.length - 1
-    // max BUFF_SLOTS different buffs: once full, only the ones you have can level up
-    const full = player.buffIds().length >= BUFF_SLOTS
-    for (let i = 0; i < FEAST; i++) {
-        if (full && player.upgrades[i] == 0) continue
-        if (player.upgrades[i] < U_MAX[i]) pool.push(i)
-    }
-    const picks: number[] = []
-    while (picks.length < 3 && pool.length > 0) {
-        const k = randint(0, pool.length - 1)
-        picks.push(pool[k])
-        pool.removeAt(k)
-    }
-    while (picks.length < 3) picks.push(FEAST)
+    // picks come from BUFF_POOL (Buffs/BuffRoster.ts); max BUFF_SLOTS different buffs
+    const full = player.buffs.length >= BUFF_SLOTS
+    const picks = rollLevelUpBuffs(player.buffs, LEVEL_UP_CHOICES)
     const names: string[] = []
     const descs: string[] = []
     const icons: Image[] = []
-    for (const id of picks) {
-        names.push(U_NAME[id] + (U_MAX[id] < 99 ? " Lv" + (player.upgrades[id] + 1) : ""))
-        descs.push(U_DESC[id])
-        icons.push(id < BUFF_ICONS.length ? BUFF_ICONS[id] : null)
+    for (const b of picks) {
+        const next = b.level + 1
+        let label = b.name
+        if (!b.instant) {
+            label += " Lv" + next
+            if (b.level == 0) label += "  NEW"
+            if (next == b.maxLevel) label += " MAX"
+        }
+        names.push(label)
+        descs.push(b.describe(next))
+        icons.push(b.icon)
     }
     sfx(music.baDing)
     const footer = full ? "Buffs full (" + BUFF_SLOTS + "/" + BUFF_SLOTS + ") - A select" : "UP/DOWN choose  A select"
     openMenu("LEVEL UP!  LV " + player.level, names, descs, footer, function (i: number) {
-        applyUpgrade(picks[i])
+        player.takeBuff(picks[i])
     }, icons)
 }
 
@@ -907,6 +765,7 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (p, e) {
         return
     }
     hurtEnemy(e, dmg)
+    for (const it of player.perks()) it.onProjectileHit(p, e)
     const pierce = getDN(p, "pierce")
     if (pierce <= 0) p.destroy()
     else setDN(p, "pierce", pierce - 1)
@@ -915,7 +774,8 @@ sprites.onOverlap(SpriteKind.Projectile, SpriteKind.Enemy, function (p, e) {
 sprites.onOverlap(SpriteKind.Orbit, SpriteKind.Enemy, function (o, e) {
     if (gameTime - getDN(e, "orb") < 450) return
     setDN(e, "orb", gameTime)
-    hurtEnemy(e, (2 + player.upgrades[0]) * player.dmgMult)
+    // blade damage grows with the Orbit Blades buff (Buffs/Buffs.ts)
+    hurtEnemy(e, (2 + player.buffLevel("orbit")) * player.dmgMult)
 })
 
 sprites.onOverlap(SpriteKind.Orbit, SpriteKind.EnemyShot, function (o, s) {
@@ -974,19 +834,45 @@ game.onUpdateInterval(100, function () {
         let spd = getDN(e, "spd")
         const stunned = getDN(e, "stun") > gameTime
         if (stunned) spd = 0
-        if (E_FLY[t] || (t == 2 && d < 55)) {
-            // flyers go straight; goblins back away when too close
-            if (t == 2 && d < 55) spd = -spd * 0.7
+
+        // wolves: every few seconds, charge straight at the hero
+        if (t == T_WOLF && !stunned) {
+            if (getDN(e, "dash") > gameTime) continue // mid-charge: keep the charge velocity
+            let cd = getDN(e, "cd") - 100
+            if (cd <= 0 && d < 110) {
+                e.vx = dx / d * spd * 4
+                e.vy = dy / d * spd * 4
+                setDN(e, "dash", gameTime + 400)
+                setDN(e, "cd", 2200)
+                continue
+            }
+            setDN(e, "cd", cd)
+        }
+
+        // shooters back away when the hero gets close
+        const keepAway = isShooterType(t) && d < (t == T_FIRE_IMP ? 70 : 55)
+        if (E_FLY[t] || keepAway) {
+            // flyers go straight
+            if (keepAway) spd = -spd * 0.7
             e.vx = dx / d * spd
             e.vy = dy / d * spd
         } else {
             walkTowardHero(e, spd)
             if (!stunned && unstickWalker(e)) continue
         }
-        if (t == 2 && !stunned) {
+
+        // shooters: goblins fire one shot, fire imps a 3-shot spread
+        if (isShooterType(t) && !stunned) {
             let cd = getDN(e, "cd") - 100
             if (cd <= 0) {
-                if (d < 120) enemyShoot(e, Math.atan2(dy, dx), 70)
+                if (d < 120) {
+                    const a = Math.atan2(dy, dx)
+                    if (t == T_FIRE_IMP) {
+                        for (let k = -1; k <= 1; k++) enemyShoot(e, a + k * 0.3, 65)
+                    } else {
+                        enemyShoot(e, a, 70)
+                    }
+                }
                 cd = Math.max(1400, 2600 - floorNum * 100)
             }
             setDN(e, "cd", cd)
@@ -1028,6 +914,7 @@ game.onUpdate(function () {
         floorNum++
         hero.heal(2)
         setupFloor()
+        for (const it of player.perks()) it.onEachFloor(floorNum)
         sfx(music.powerUp)
         return
     }
@@ -1042,11 +929,11 @@ game.onUpdate(function () {
 
     // hero-specific per-frame logic (e.g. rogue roll)
     hero.update(dt)
-    for (const it of player.items) it.update(dt)
+    for (const it of player.perks()) it.update(dt)
     updateFog()
 
     // aim + face
-    const tgt = findTarget(hero.x, hero.y, SW * 0.72, true)
+    const tgt = hero.currentTarget()
     if (tgt) aimAngle = Math.atan2(tgt.y - hero.y, tgt.x - hero.x)
     else if (hero.vx != 0 || hero.vy != 0) aimAngle = Math.atan2(hero.vy, hero.vx)
     const right = Math.cos(aimAngle) >= 0
@@ -1061,6 +948,7 @@ game.onUpdate(function () {
             // a flyer behind a wall can only be hit by shots that go over walls
             shotsIgnoreWalls = isFlyer(tgt) && !lineOfSight(hero.x, hero.y, tgt.x, tgt.y)
             hero.attack(tgt)
+            for (const it of player.perks()) it.onAttack(tgt)
             shotsIgnoreWalls = false
             fireTimer = hero.attackCooldown / (player.rateMult * hero.fireRateMult())
         }
@@ -1069,44 +957,7 @@ game.onUpdate(function () {
     // invulnerability blink
     hero.setFlag(SpriteFlag.Invisible, gameTime < invulnUntil && Math.floor(gameTime / 70) % 2 == 0)
 
-    // orbit blades
-    const n = orbits.length
-    for (let i = 0; i < n; i++) {
-        const a = gameTime / 260 + i * 2 * Math.PI / n
-        orbits[i].setPosition(hero.x + Math.cos(a) * 28, hero.y + Math.sin(a) * 28)
-    }
-
-    // holy aura
-    if (aura) {
-        aura.setPosition(hero.x, hero.y)
-        auraTimer += dt
-        if (auraTimer >= 500) {
-            auraTimer = 0
-            const r = auraRadius()
-            const dmg = (0.5 + 0.5 * player.upgrades[1]) * player.dmgMult
-            for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
-                const ex = e.x - hero.x
-                const ey = e.y - hero.y
-                if (ex * ex + ey * ey < r * r) hurtEnemy(e, dmg)
-            }
-        }
-    }
-
-    // lightning
-    if (player.upgrades[2] > 0) {
-        boltTimer += dt
-        if (boltTimer >= 2600 - player.upgrades[2] * 300) {
-            boltTimer = 0
-            const list = sprites.allOfKind(SpriteKind.Enemy).filter(e => Math.abs(e.x - hero.x) < SW * 0.53 && Math.abs(e.y - hero.y) < SH * 0.54)
-            for (let i = 0; i < player.upgrades[2] && list.length > 0; i++) {
-                const k = randint(0, list.length - 1)
-                const e = list[k]
-                list.removeAt(k)
-                fx(BOLT_IMG, e.x, e.y - 26, 150)
-                hurtEnemy(e, (5 + player.upgrades[2] * 3) * player.dmgMult)
-            }
-        }
-    }
+    // (Holy Aura and Lightning now run in their own update() - see Buffs/Buffs.ts)
 
     // magnet
     const r2 = player.pickupRange * player.pickupRange
@@ -1167,7 +1018,7 @@ function drawBar(t: Image, x: number, y: number, w: number, frac: number, col: n
 // item bar: ITEM_SLOTS chest items (yellow frames), then BUFF_SLOTS buffs (blue frames) with their level
 const SLOT_SIZE = 12
 function drawItemBar(t: Image, x0: number, y0: number) {
-    for (let i = 0; i < ITEM_SLOTS; i++) {
+    for (let i = 0; i < player.maxItemSlots ; i++) {
         const x = x0 + i * (SLOT_SIZE + 1)
         t.fillRect(x, y0, SLOT_SIZE, SLOT_SIZE, 15)
         t.drawRect(x, y0, SLOT_SIZE, SLOT_SIZE, i < player.items.length ? 5 : 12)
@@ -1178,17 +1029,17 @@ function drawItemBar(t: Image, x0: number, y0: number) {
             t.print("" + it.level, x + SLOT_SIZE - 5, y0 + SLOT_SIZE - 6, it.level >= it.maxLevel ? 5 : 1, image.font5)
         }
     }
-    const bx = x0 + ITEM_SLOTS * (SLOT_SIZE + 1) + 3
-    const buffs = player.buffIds()
+    const bx = x0 + player.maxItemSlots * (SLOT_SIZE + 1) + 3
+    const buffs = player.buffs
     for (let i = 0; i < BUFF_SLOTS; i++) {
         const x = bx + i * (SLOT_SIZE + 1)
         t.fillRect(x, y0, SLOT_SIZE, SLOT_SIZE, 15)
         t.drawRect(x, y0, SLOT_SIZE, SLOT_SIZE, i < buffs.length ? 9 : 12)
         if (i < buffs.length) {
-            const id = buffs[i]
-            t.drawTransparentImage(BUFF_ICONS[id], x + 1, y0 + 1)
+            const b = buffs[i]
+            if (b.icon) t.drawTransparentImage(b.icon, x + 1, y0 + 1)
             t.fillRect(x + SLOT_SIZE - 5, y0 + SLOT_SIZE - 6, 5, 6, 15)
-            t.print("" + player.upgrades[id], x + SLOT_SIZE - 5, y0 + SLOT_SIZE - 6, player.upgrades[id] >= U_MAX[id] ? 5 : 1, image.font5)
+            t.print("" + b.level, x + SLOT_SIZE - 5, y0 + SLOT_SIZE - 6, b.level >= b.maxLevel ? 5 : 1, image.font5)
         }
     }
 }
@@ -1241,11 +1092,9 @@ scene.createRenderable(100, (t, c) => {
 // list it in pxt.json, and add `new MyHero()` here.
 function createHeroRoster(): HeroCharacter[] {
     return [
-        new KnightCharacter(),
-        new RogueCharacter(),
-        new WizardCharacter(),
         new NinjaCharacter(),
         new PirateCharacter(),
+        new NapoleonCharacter(),
     ]
 }
 

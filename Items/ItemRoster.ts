@@ -10,6 +10,17 @@ const ITEM_POOL: (() => Item)[] = [
     () => new SplitCrystal(),
     () => new BombRing(),
     () => new RegenCharm(),
+    () => new StarTracer(),
+    () => new CursedIdol(),
+    () => new GamblersDie(),
+    () => new BloodPact(),
+    () => new ShadowStep(),
+    () => new SecondWind(),
+    () => new RicochetCharm(),
+    () => new ExecutionersAxe(),
+    () => new TwinFang(),
+    () => new EmberCore(),
+    () => new OrbitBlade(),
 ];
 
 /** Number of choices a chest offers. */

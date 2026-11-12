@@ -1,0 +1,30 @@
+name: PR Build Check
+
+on:
+  pull_request:
+    branches: [master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Disable dev mode
+        run: |
+          if grep -q "const DEV_MODE = true" config.ts; then
+            sed -i 's/const DEV_MODE = true/const DEV_MODE = false/' config.ts
+            echo "DEV_MODE set to false"
+          else
+            echo "::warning::DEV_MODE = true not found in config.ts - nothing to disable"
+          fi
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+
+      - name: install makecode cli
+        run: npm install -g makecode
+
+      - name: build game
+        run: mkc build --java-script --always-built
