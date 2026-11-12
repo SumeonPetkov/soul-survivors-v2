@@ -161,6 +161,10 @@ abstract class Level {
     /** Room-clearing levels: how many rooms hold a miniboss. */
     miniBossRooms = [1, 2];
 
+    // ================= SHOP (see Shop.ts) =================
+    /** % chance this floor has a vending machine (at most one per floor). */
+    vendingChance = 50;
+
     // ================= BOSS =================
     /** ms into the floor before the boss appears. */
     bossSpawnTime = 12000;
