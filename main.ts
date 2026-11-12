@@ -220,8 +220,9 @@ function isWallAt(x: number, y: number): boolean {
 }
 
 function clearLevel() {
-    const kinds = [SpriteKind.Enemy, SpriteKind.EnemyShot, SpriteKind.Projectile, SpriteKind.Gem, SpriteKind.Pickup, SpriteKind.Portal, SpriteKind.Fx, SpriteKind.Chest]
+    const kinds = [SpriteKind.Enemy, SpriteKind.EnemyShot, SpriteKind.Projectile, SpriteKind.Gem, SpriteKind.Pickup, SpriteKind.Portal, SpriteKind.Fx, SpriteKind.Chest, SpriteKind.Coin, SpriteKind.Vending]
     for (const k of kinds) sprites.destroyAllSpritesOfKind(k)
+    vendingMachine = null
     portal = null
     boss = null
 }
@@ -236,6 +237,7 @@ function setupFloor() {
     miniBossIdx = 0
     buildMinimap()
     hero.setPosition(currentLevel.startCol * 16 + 8, currentLevel.startRow * 16 + 8)
+    setupShop() // map coins + maybe a vending machine (Shop.ts)
     floorTime = 0
     spawnTimer = currentLevel.firstSpawnDelay
     swarmTimer = 0
@@ -315,7 +317,8 @@ function chestImage(): Image {
     return im
 }
 
-function dropChest(x: number, y: number) {
+/** coins: paid out the first time the chest is opened (see Shop.ts). */
+function dropChest(x: number, y: number, coins = 0) {
     if (isWallAt(x, y)) {
         x = Math.floor(hero.x / 16) * 16 + 8
         y = Math.floor(hero.y / 16) * 16 + 8
@@ -324,6 +327,7 @@ function dropChest(x: number, y: number) {
     c.setPosition(x, y)
     c.z = 2
     setDN(c, "armed", 1)
+    setDN(c, "coins", coins)
     fx(PUFF_IMG, x, y, 250)
     sfx(music.magicWand)
 }
@@ -334,6 +338,12 @@ function isCarried(it: Item): boolean {
 
 /** A chest offers CHEST_CHOICES items: new ones start at Lv1, ones you carry level up. */
 function openChest(c: Sprite) {
+    // coins spill out the first time it's opened
+    const coins = getDN(c, "coins")
+    if (coins > 0) {
+        setDN(c, "coins", 0)
+        burstCoins(c.x, c.y, coins)
+    }
     // the choices are rolled once per chest, so stepping off and on doesn't re-roll them
     let choices: Item[] = c.data["items"]
     if (!choices) {
@@ -521,7 +531,8 @@ function killEnemy(e: Sprite, effects = true) {
     const t = getDN(e, "type")
     kills++
     dropGem(e.x, e.y, E_XP[t])
-    if (getDN(e, "elite") > 0) dropChest(e.x, e.y)
+    if (getDN(e, "elite") > 0) dropChest(e.x, e.y, randint(COINS_MINIBOSS_CHEST[0], COINS_MINIBOSS_CHEST[1]))
+    maybeDropEnemyCoin(e, t)
     if (player) for (const it of player.perks()) it.onKill(e.x, e.y)
     if (Math.percentChance(t == T_OGRE ? 6 : 1.5)) dropPickup(2, e.x - 3, e.y + 2)
     fx(DEATH_IMG, e.x, e.y, 150)
@@ -543,7 +554,7 @@ function bossDefeated(b: Boss) {
     const cdx = hero.x - b.x
     const cdy = hero.y - b.y
     const cd = Math.sqrt(cdx * cdx + cdy * cdy) + 0.01
-    dropChest(b.x + cdx / cd * 28, b.y + cdy / cd * 28)
+    dropChest(b.x + cdx / cd * 28, b.y + cdy / cd * 28, randint(COINS_BOSS_CHEST[0], COINS_BOSS_CHEST[1]))
     // the boss can die wedged against (or inside) a wall: snap the portal to the
     // nearest floor tile the hero can actually walk to
     const pp = nearestReachableSpot(b.x, b.y)
@@ -965,6 +976,8 @@ game.onUpdate(function () {
     if (gems.length == 0) magnetAll = false
     for (const g of gems) pullToPlayer(g, r2)
     for (const k of sprites.allOfKind(SpriteKind.Pickup)) pullToPlayer(k, r2)
+    for (const k of sprites.allOfKind(SpriteKind.Coin)) pullToPlayer(k, r2)
+    updateShop()
 
     // room clearing: lock rooms on entry, spawn their enemies, unlock when cleared
     updateRoomClear(dt)
@@ -1053,6 +1066,7 @@ scene.createRenderable(100, (t, c) => {
     t.fillRect(1, 1, 56, 10, 15)
     drawBar(t, 3, 3, 52, hero.hp / hero.maxHp, 2, "HP " + hero.hp + "/" + hero.maxHp)
     drawItemBar(t, 1, 12)
+    drawCoinCounter(t, 1, 25) // Shop.ts
     // floor + timer
     let ts = fmtTime(currentLevel.bossSpawnTime - floorTime)
     if (roomMode) ts = roomLocked() ? "CLEAR THE ROOM" : "ROOMS " + roomsCleared() + "/" + roomsTotal()

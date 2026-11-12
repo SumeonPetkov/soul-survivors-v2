@@ -48,7 +48,8 @@
         "main.ts",
         "DevTools.ts",
         "Characters/Napoleon.ts",
-        "Enemies.ts"
+        "Enemies.ts",
+        "Shop.ts"
     ],
     "testFiles": [
         "test.ts"
