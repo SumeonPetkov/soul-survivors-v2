@@ -644,8 +644,8 @@ class EmberCore extends Item {
 }
 
 class OrbitBlade extends Item {
-    // +1 blade, and every blade (including Orbit Blades buff ones) flings shards outward
-    added = 0; // blades this item has added to the shared `orbits` list
+    // +1 blade (syncOrbits in main.ts adds it while this is carried), and every blade
+    // (including Orbit Blades buff ones) flings shards outward
     timer = 0;
     shard: Image = null;
     interval(level: number) { return 2500 - 500 * level; } // 2 / 1.5 / 1 s
@@ -661,19 +661,8 @@ class OrbitBlade extends Item {
             s.setPosition(o.x, o.y);
         }
     }
-    apply(n: number) {
-        if (n > 0) {
-            if (this.added == 0) { addOrbit(); this.added = 1; }
-        } else {
-            for (let i = 0; i < this.added; i++) {
-                const o = orbits.pop();
-                if (o) o.destroy();
-            }
-            this.added = 0;
-        }
-    }
     constructor() {
-        super("orbit", "Orbit Blade", 3, img`
+        super("orbit_blade", "Orbit Blade", 3, img`
             . . . . . . . . . .
             . . . . 1 1 . . . .
             . . . . b b . . . .
