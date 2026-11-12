@@ -957,6 +957,13 @@ game.onUpdate(function () {
     // invulnerability blink
     hero.setFlag(SpriteFlag.Invisible, gameTime < invulnUntil && Math.floor(gameTime / 70) % 2 == 0)
 
+    // orbit blades spin around the hero (added by the Orbit Blades buff and the Orbit Blade item)
+    const n = orbits.length
+    for (let i = 0; i < n; i++) {
+        const a = gameTime / 260 + i * 2 * Math.PI / n
+        orbits[i].setPosition(hero.x + Math.cos(a) * 28, hero.y + Math.sin(a) * 28)
+    }
+
     // (Holy Aura and Lightning now run in their own update() - see Buffs/Buffs.ts)
 
     // magnet
