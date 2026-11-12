@@ -30,3 +30,30 @@ jobs:
 
       - name: build game
         run: mkc build --java-script --always-built
+
+      # ---- runtime checks: things that compile fine but crash when the game runs ----
+
+      # every getImage("name") / hero sprite name must exist in images.g.jres
+      - name: check image names
+        run: node .github/scripts/check-images.js
+
+      # open the built game in headless Chrome, play ~25s, fail on a crash in the console
+      - name: install playwright
+        run: |
+          npm install --no-save playwright@1.49.1
+          npx playwright install --with-deps chromium
+
+      - name: smoke test (play the built game)
+        run: |
+          cp built/binary.js assets/js/binary.js
+          python3 -m http.server 8000 > /dev/null 2>&1 &
+          sleep 2
+          node .github/scripts/smoke-test.mjs
+
+      - name: upload smoke test screenshot
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: smoke-test-screenshot
+          path: smoke-test.png
+          if-no-files-found: ignore
