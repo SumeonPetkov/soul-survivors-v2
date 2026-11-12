@@ -19,8 +19,9 @@ class PirateCharacter extends HeroCharacter implements ICharacterWithAbility {
     }
 
     useAbility(): void {
-        // big slow cannonball aimed where you face; explodes on hit
-        const a = this.faceRight ? 0 : Math.PI;
+        // big slow cannonball aimed at the nearest enemy (aimAngle falls back to
+        // the move direction when nothing is in range); explodes on hit
+        const a = -aimAngle;
         //                                            speed dmg life pierce boom
         this.shoot(this.cannonball, a, 110, 12, 1500, 0, 1);
         scene.cameraShake(4, 250);
