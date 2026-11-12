@@ -145,7 +145,8 @@ function _fogRay(x0: number, y0: number, x1: number, y1: number, tc: number, tr:
 
 /** Hides enemies, shots, pickups etc. that are not in sight. */
 function _fogHideSprites() {
-    const kinds = [SpriteKind.Enemy, SpriteKind.EnemyShot, SpriteKind.Projectile, SpriteKind.Gem, SpriteKind.Pickup, SpriteKind.Fx, SpriteKind.Orbit, SpriteKind.Barrier]
+    // (not Orbit: the hero's blades circle through walls and must always show)
+    const kinds = [SpriteKind.Enemy, SpriteKind.EnemyShot, SpriteKind.Projectile, SpriteKind.Gem, SpriteKind.Pickup, SpriteKind.Fx, SpriteKind.Barrier]
     for (const k of kinds) {
         for (const s of sprites.allOfKind(k)) {
             s.setFlag(SpriteFlag.Invisible, !fogVisibleAt(s.x, s.y))

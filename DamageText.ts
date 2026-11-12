@@ -9,10 +9,18 @@ namespace SpriteKind {
     export const DmgText = SpriteKind.create()
 }
 
+/** Whole numbers as-is; small fractional hits (burn ticks, 1.75 stars) with one decimal. */
+function formatDamage(dmg: number): string {
+    const r = Math.round(dmg * 10) / 10
+    if (r >= 10 || r == Math.floor(r)) return "" + Math.max(1, Math.round(dmg))
+    const whole = Math.floor(r)
+    return whole + "." + Math.round((r - whole) * 10)
+}
+
 function showDamageText(x: number, y: number, dmg: number, crit: boolean) {
     if (!SHOW_DAMAGE_TEXT || dmg <= 0) return
     if (sprites.allOfKind(SpriteKind.DmgText).length >= MAX_DAMAGE_TEXTS) return
-    const s = "" + Math.max(1, Math.round(dmg)) + (crit ? "!" : "")
+    const s = formatDamage(dmg) + (crit ? "!" : "")
     const font = image.font5
     // 1px black outline around the digits so they read on any floor color
     const im = image.create(s.length * font.charWidth + 2, font.charHeight + 2)
@@ -24,7 +32,7 @@ function showDamageText(x: number, y: number, dmg: number, crit: boolean) {
     const t = sprites.create(im, SpriteKind.DmgText)
     t.setFlag(SpriteFlag.Ghost, true)
     t.setPosition(x + randint(-4, 4), y)
-    t.z = 20
+    t.z = 30 // above the fog (z 20), below the HUD (z 100)
     // pops up, slows down and fades out
     t.vx = randint(-8, 8)
     t.vy = crit ? -45 : -35

@@ -640,11 +640,32 @@ function hurtPlayer(d: number) {
     sfx(music.smallCrash)
 }
 
-function addOrbit() {
-    const o = sprites.create(BLADE_IMG, SpriteKind.Orbit)
-    o.setFlag(SpriteFlag.GhostThroughWalls, true)
-    o.z = 9
-    orbits.push(o)
+/** Blades the hero should have: 1 per Orbit Blades buff level, +1 for the Orbit Blade item. */
+function wantedOrbits(): number {
+    let n = player.buffLevel("orbit")
+    for (const it of player.items) if (it.id == "orbit_blade") n++
+    return n
+}
+
+/**
+ * Makes the blades match wantedOrbits(): drops any that were destroyed or left in another
+ * scene, then adds/removes blades. Runs 10x per second, so blades can never go missing.
+ */
+function syncOrbits() {
+    const live = game.currentScene().allSprites
+    for (let i = orbits.length - 1; i >= 0; i--) {
+        const o = orbits[i]
+        if ((o.flags & sprites.Flag.Destroyed) || live.indexOf(o) < 0) orbits.removeAt(i)
+    }
+    const want = wantedOrbits()
+    while (orbits.length < want) {
+        const o = sprites.create(BLADE_IMG, SpriteKind.Orbit)
+        o.setFlag(SpriteFlag.GhostThroughWalls, true)
+        o.z = 21 // above the fog (drawn at z 20), so blades over unexplored walls still show
+        o.setPosition(hero.x, hero.y)
+        orbits.push(o)
+    }
+    while (orbits.length > want) orbits.pop().destroy()
 }
 
 
@@ -857,6 +878,7 @@ sprites.onOverlap(SpriteKind.Player, SpriteKind.Portal, function (p, o) {
 game.onUpdateInterval(100, function () {
     if (!started) return
     updateFlowField()
+    syncOrbits()
     if (boss) boss.think(100)
     for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
         if (e == boss) continue
