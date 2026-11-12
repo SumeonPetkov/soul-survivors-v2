@@ -160,7 +160,7 @@ abstract class Boss extends Character implements ICharacter {
         }
     }
 
-    // ---------- required / overridable ---------
+    // ---------- required / overridable --------
 
     attack(target: Sprite): void {
         throw "attack() not implemented in " + this.name;
