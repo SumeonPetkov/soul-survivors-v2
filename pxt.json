@@ -47,6 +47,7 @@
         "RoomClear.ts",
         "Minimap.ts",
         "Enemies.ts",
+        "Shop.ts",
         "main.ts",
         "DevTools.ts"
     ],
