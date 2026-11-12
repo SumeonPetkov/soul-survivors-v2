@@ -8,37 +8,68 @@ class Player {
     xpNeed: number;
     pendingLevels: number;
 
-    /** upgrades[id] = how many times upgrade `id` (see U_NAME) was picked. */
-    upgrades: number[];
+    /** Level-up buffs owned (max BUFF_SLOTS). Instant buffs like Feast are never stored. */
+    buffs: Buff[];
     /** Chest items carried (max ITEM_SLOTS). */
     items: Item[];
     dmgMult: number;
     rateMult: number;
     multishot: number;
     critChance: number;
+    /** Damage multiplier on a crit (2 = double damage). */
+    critMult: number;
+    /** XP gain multiplier (1 = normal). */
+    xpMult: number;
     pickupRange: number;
+    maxItemSlots: number;
 
     constructor(hero: HeroCharacter) {
         this.hero = hero;
         this.xp = 0;
         this.level = 1;
         this.xpNeed = 5;
+        this.maxItemSlots = ITEM_SLOTS;
         this.pendingLevels = 0;
-        this.upgrades = [];
-        for (let i = 0; i < U_NAME.length; i++) this.upgrades.push(0);
+        this.buffs = [];
         this.items = [];
         this.dmgMult = 1;
         this.rateMult = 1;
         this.multishot = 0;
         this.critChance = 5;
-        this.pickupRange = 300;
+        this.critMult = 2;
+        this.xpMult = 1;
+        this.pickupRange = 50;
     }
 
-    /** Level-up buffs owned (upgrade ids with at least one level). Feast doesn't count. */
-    buffIds(): number[] {
-        const out: number[] = [];
-        for (let i = 0; i < U_NAME.length - 1; i++) if (this.upgrades[i] > 0) out.push(i);
+    /** Everything whose hooks run: carried items, then owned buffs. */
+    perks(): Perk[] {
+        const out: Perk[] = [];
+        for (const it of this.items) out.push(it);
+        for (const b of this.buffs) out.push(b);
         return out;
+    }
+
+    /** Level of the owned buff with this id (0 if not owned). */
+    buffLevel(id: string): number {
+        for (const b of this.buffs) if (b.id == id) return b.level;
+        return 0;
+    }
+
+    /** Takes a buff picked on level up: new ones start at Lv1, owned ones level up. */
+    takeBuff(b: Buff) {
+        if (b.instant) {
+            b.level = 1;
+            b.apply(1);
+            return;
+        }
+        if (this.buffs.indexOf(b) < 0) {
+            this.buffs.push(b);
+            b.level = 1;
+        } else {
+            if (b.level >= b.maxLevel) return;
+            b.level++;
+        }
+        b.apply(1);
     }
 
     /** Adds a new item at level 1 (caller checks there's a free slot). */
@@ -66,7 +97,7 @@ class Player {
     }
 
     gainXp(v: number) {
-        this.xp += v;
+        this.xp += v * this.xpMult;
         while (this.xp >= this.xpNeed) {
             this.xp -= this.xpNeed;
             this.level++;

@@ -58,7 +58,7 @@ abstract class Level {
     edgeRoughness = [0, 10];
 
     // ---------- layout ----------
-    layouts: LevelLayout[] = [LevelLayout.Blocks];
+    layouts: LevelLayout[] = [LevelLayout.RoomDungeon];
     layoutWeights = [1];
     /** Blocks: how many, plus blocksPerFloor for each floor number; size of each side. */
     blockCount = [12, 18];
@@ -75,11 +75,13 @@ abstract class Level {
     // ---------- room dungeon (LevelLayout.RoomDungeon) ----------
     /** Which hand-drawn rooms to use (the set name given to defineRoom). */
     roomSet = "dungeon";
+    /** % of rooms taken from the hand-drawn set; the rest are generated from scratch (WorldGen/RoomShapes.ts). */
+    handDrawnRoomChance = 0;
     /** Grid of rooms: how many across and down. Not scaled by screen size. */
     roomGridCols = [3, 4];
     roomGridRows = [3, 4];
     /** Tiles per grid cell. Rooms can be up to (roomCellSize - 4) on each side. */
-    roomCellSize = 16;
+    roomCellSize = 20;
     /** Corridor width in tiles. */
     corridorWidth = [2, 2];
     /** % chance for each pair of neighbouring rooms not already joined to get an extra corridor (loops). */
@@ -89,16 +91,16 @@ abstract class Level {
 
     // ---------- room clearing (RoomDungeon only) ----------
     /** true = entering a room locks its doors until every enemy inside is dead; the boss waits in the deepest room. */
-    clearRoomsToLeave = false;
+    clearRoomsToLeave = true;
     /** Enemies per wave in a room, plus roomEnemiesPerFloor for each floor after the first. */
     roomEnemies = [3, 6];
     roomEnemiesPerFloor = 1;
     /** Waves per room (the next wave comes when the previous one is dead). */
-    roomWaves = [1, 1];
+    roomWaves = [1, 2];
 
     // ---------- fog of war ----------
     /** true = you only see what's in line of sight; unexplored areas are black. */
-    fogOfWar = false;
+    fogOfWar = true;
     /** How far the hero can see, in tiles. */
     fogRadius = 11;
 
@@ -117,7 +119,7 @@ abstract class Level {
     /** Tiles around the start that are always kept clear. */
     safeRadius = 4;
     /** If less than this % of the map ends up walkable, the map is re-rolled (up to 6 tries). */
-    minOpenFloor = 35;
+    minOpenFloor = 0; // room maps are mostly solid rock - never re-roll
     /**
      * Sizes and counts above are tuned for the default 160x120 screen. When true, map size
      * is multiplied by (screen width / 160) and obstacle/extra counts by that squared,

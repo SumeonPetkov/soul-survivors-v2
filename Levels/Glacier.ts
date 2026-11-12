@@ -7,8 +7,6 @@ class GlacierLevel extends Level {
         this.shapes = [MapShape.Oval, MapShape.Blob, MapShape.Rectangle];
         this.shapeWeights = [4, 4, 2];
         this.edgeRoughness = [5, 20];
-        this.layouts = [LevelLayout.Caves, LevelLayout.Open];
-        this.layoutWeights = [7, 3];
         this.caveDensity = [38, 45];
         this.boulders = [1, 5];
         this.ruins = [0, 0];

@@ -71,6 +71,26 @@ abstract class HeroCharacter extends Character implements ICharacterWithAbility 
         this.setImage(right ? this.imgR : this.imgL);
     }
 
+    // ---- targeting ----
+
+    /** How far the auto-attack reaches, in px. Override in a hero for a shorter/longer range. */
+    get attackRange(): number {
+        return SW * 0.72;
+    }
+
+    /**
+     * The enemy the auto-attack would shoot right now (nearest in range with a clear shot;
+     * flyers count even behind walls), or null if there is none.
+     */
+    currentTarget(): Sprite {
+        return findTarget(this.x, this.y, this.attackRange, true);
+    }
+
+    /** true when there is an enemy in range the hero can shoot. */
+    canAttack(): boolean {
+        return this.currentTarget() != null;
+    }
+
     /** Gives the arrow keys control of the hero at its current speed. */
     enableMovement() {
         controller.moveSprite(this, this.speed, this.speed);
@@ -95,7 +115,7 @@ abstract class HeroCharacter extends Character implements ICharacterWithAbility 
      * Fires one projectile. Damage is scaled by the Power upgrade.
      * pierce: enemies it passes through, boom: 1 = explodes on hit, home: 1 = seeks enemies.
      */
-    protected shoot(img: Image, angle: number, speed: number, damage: number, life: number,
+    shoot(img: Image, angle: number, speed: number, damage: number, life: number,
         pierce = 0, boom = 0, home = 0): Sprite {
         const p = sprites.createProjectileFromSprite(img, this, Math.cos(angle) * speed, Math.sin(angle) * speed);
         if (shotsIgnoreWalls) {

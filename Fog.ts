@@ -64,8 +64,11 @@ function fogRefresh() {
 /** Call every frame. */
 function updateFog() {
     if (!fogOn || !hero) return
-    const hc = Math.floor(hero.x / 16)
-    const hr = Math.floor(hero.y / 16)
+    // not floor(hero.x / 16): against a wall the hero's center can be over the wall
+    // tile, and every sight line from inside a wall is blocked -> everything fogged
+    const ht = heroTile()
+    const hc = ht[0]
+    const hr = ht[1]
     if (hc != _fogHeroC || hr != _fogHeroR) {
         _fogHeroC = hc
         _fogHeroR = hr

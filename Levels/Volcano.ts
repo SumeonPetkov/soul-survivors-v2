@@ -7,8 +7,6 @@ class VolcanoLevel extends Level {
         this.shapes = [MapShape.Diamond, MapShape.Rectangle, MapShape.Cross, MapShape.Blob];
         this.shapeWeights = [3, 3, 2, 2];
         this.edgeRoughness = [0, 15];
-        this.layouts = [LevelLayout.Rooms, LevelLayout.Blocks, LevelLayout.Caves];
-        this.layoutWeights = [5, 3, 2];
         this.roomSize = [6, 9];
         this.blockCount = [14, 20];
         this.caveDensity = [38, 43];
