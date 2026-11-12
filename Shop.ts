@@ -113,10 +113,10 @@ function burstCoins(x: number, y: number, total: number) {
 }
 
 /** Called from killEnemy: maybe drop a coin. */
-function maybeDropEnemyCoin(e: Sprite, t: number) {
+function maybeDropEnemyCoin(e: Sprite, def: EnemyType) {
     const elite = getDN(e, "elite") > 0
     if (elite) return // minibosses pay out through their chest
-    if (Math.percentChance(t == T_OGRE ? COIN_DROP_CHANCE_OGRE : COIN_DROP_CHANCE)) dropCoin(e.x + 3, e.y - 2, 1)
+    if (Math.percentChance(def.coinDropChance)) dropCoin(e.x + 3, e.y - 2, 1)
 }
 
 function gainCoins(n: number) {

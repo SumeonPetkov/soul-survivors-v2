@@ -39,7 +39,7 @@ const MAX_SHOTS = 70
 // Levels live in Levels/ (order in Levels/LevelRoster.ts); each picks its own boss from Bosses/.
 
 // ---------------- ENEMIES ----------------
-// Enemy types, stats, sprites and death effects live in Enemies.ts.
+// Enemy types (stats, sprites, AI, death effects) live in Enemies/*.ts - see BaseClasses/EnemyType.ts.
 
 // ---------------- ART ----------------
 const GEM_G = img`
@@ -279,11 +279,12 @@ function initEnemy(e: Sprite, t: number, hpv: number, spd: number) {
 
 function spawnEnemyAt(t: number, x: number, y: number, force = false): Sprite {
     if (!force && sprites.allOfKind(SpriteKind.Enemy).length >= MAX_ENEMIES) return null
-    const e = sprites.create(E_IMG[t], SpriteKind.Enemy)
+    const def = ENEMIES[t] // Enemies/EnemyRoster.ts
+    const e = sprites.create(def.img, SpriteKind.Enemy)
     e.setPosition(x, y)
-    if (E_FLY[t]) e.setFlag(SpriteFlag.GhostThroughWalls, true)
+    if (def.flying) e.setFlag(SpriteFlag.GhostThroughWalls, true)
     const scale = 1 + 0.45 * (floorNum - 1) + floorTime / 60000 * 0.6
-    initEnemy(e, t, Math.ceil(E_HP[t] * scale), E_SPD[t] + floorNum * 2 + randint(-3, 3))
+    initEnemy(e, t, Math.ceil(def.hp * scale), def.speed + floorNum * 2 + randint(-3, 3))
     return e
 }
 
@@ -431,7 +432,7 @@ function chooseSwap(c: Sprite, it: Item) {
     }, icons)
 }
 
-// spawns one enemy just off screen, type picked from the level's enemyWeights
+// spawns one enemy just off screen, type picked from the level's addEnemy list
 function spawnEnemy() {
     const pos = findSpawn()
     if (pos.length == 0) return
@@ -474,7 +475,7 @@ let shotsIgnoreWalls = false
 
 function isFlyer(e: Sprite): boolean {
     if (boss && e == boss) return boss.flying
-    return E_FLY[getDN(e, "type")]
+    return ENEMIES[getDN(e, "type")].flying
 }
 
 /** true if no wall tile lies on the straight line between the two points. */
@@ -534,15 +535,15 @@ function hurtEnemy(e: Sprite, dmg: number) {
 function killEnemy(e: Sprite, effects = true) {
     if (getDB(e, "dead")) return
     setDB(e, "dead", true)
-    const t = getDN(e, "type")
+    const def = ENEMIES[getDN(e, "type")]
     kills++
-    dropGem(e.x, e.y, E_XP[t])
+    dropGem(e.x, e.y, def.xp)
     if (getDN(e, "elite") > 0) dropChest(e.x, e.y, randint(COINS_MINIBOSS_CHEST[0], COINS_MINIBOSS_CHEST[1]))
-    maybeDropEnemyCoin(e, t)
+    maybeDropEnemyCoin(e, def)
     if (player) for (const it of player.perks()) it.onKill(e.x, e.y)
-    if (Math.percentChance(t == T_OGRE ? 6 : 1.5)) dropPickup(2, e.x - 3, e.y + 2)
+    if (Math.percentChance(def.healthDropChance)) dropPickup(2, e.x - 3, e.y + 2)
     fx(DEATH_IMG, e.x, e.y, 150)
-    if (effects) enemyDeathEffects(e, t) // see Enemies.ts
+    if (effects) def.onDeath(e) // splitting, reviving, shot bursts (Enemies/*.ts)
     e.destroy()
 }
 
@@ -847,7 +848,7 @@ sprites.onOverlap(SpriteKind.Orbit, SpriteKind.EnemyShot, function (o, s) {
 })
 
 sprites.onOverlap(SpriteKind.Player, SpriteKind.Enemy, function (p, e) {
-    hurtPlayer(boss && e == boss ? boss.contactDamage : E_DMG[getDN(e, "type")])
+    hurtPlayer(boss && e == boss ? boss.contactDamage : ENEMIES[getDN(e, "type")].damage)
 })
 
 sprites.onOverlap(SpriteKind.Player, SpriteKind.EnemyShot, function (p, s) {
@@ -887,7 +888,6 @@ game.onUpdateInterval(100, function () {
     if (boss) boss.think(100)
     for (const e of sprites.allOfKind(SpriteKind.Enemy)) {
         if (e == boss) continue
-        const t = getDN(e, "type")
         const dx = hero.x - e.x
         const dy = hero.y - e.y
         const d = Math.sqrt(dx * dx + dy * dy) + 0.01
@@ -896,52 +896,9 @@ game.onUpdateInterval(100, function () {
             if (pos.length > 0) e.setPosition(pos[0], pos[1])
             continue
         }
-        let spd = getDN(e, "spd")
         const stunned = getDN(e, "stun") > gameTime
-        if (stunned) spd = 0
-
-        // wolves: every few seconds, charge straight at the hero
-        if (t == T_WOLF && !stunned) {
-            if (getDN(e, "dash") > gameTime) continue // mid-charge: keep the charge velocity
-            let cd = getDN(e, "cd") - 100
-            if (cd <= 0 && d < 110) {
-                e.vx = dx / d * spd * 4
-                e.vy = dy / d * spd * 4
-                setDN(e, "dash", gameTime + 400)
-                setDN(e, "cd", 2200)
-                continue
-            }
-            setDN(e, "cd", cd)
-        }
-
-        // shooters back away when the hero gets close
-        const keepAway = isShooterType(t) && d < (t == T_FIRE_IMP ? 70 : 55)
-        if (E_FLY[t] || keepAway) {
-            // flyers go straight
-            if (keepAway) spd = -spd * 0.7
-            e.vx = dx / d * spd
-            e.vy = dy / d * spd
-        } else {
-            walkTowardHero(e, spd)
-            if (!stunned && unstickWalker(e)) continue
-        }
-
-        // shooters: goblins fire one shot, fire imps a 3-shot spread
-        if (isShooterType(t) && !stunned) {
-            let cd = getDN(e, "cd") - 100
-            if (cd <= 0) {
-                if (d < 120) {
-                    const a = Math.atan2(dy, dx)
-                    if (t == T_FIRE_IMP) {
-                        for (let k = -1; k <= 1; k++) enemyShoot(e, a + k * 0.3, 65)
-                    } else {
-                        enemyShoot(e, a, 70)
-                    }
-                }
-                cd = Math.max(1400, 2600 - floorNum * 100)
-            }
-            setDN(e, "cd", cd)
-        }
+        // movement and attacks: each type's think() (Enemies/*.ts)
+        ENEMIES[getDN(e, "type")].think(e, dx, dy, d, stunned ? 0 : getDN(e, "spd"), stunned)
     }
     // homing staff bolts
     for (const p of sprites.allOfKind(SpriteKind.Projectile)) {

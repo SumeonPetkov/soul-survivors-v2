@@ -21,9 +21,13 @@ class GlacierLevel extends Level {
         this.wallTopColor = 1;
         this.wallLineColor = 9;
         this.wallFaceColor = 8;
-        // ---- enemies:       turtle bat gob ogre skel king wolf spore golem shard imp magma slime
-        this.enemyWeights =  [22,   25, 15, 8,   0,   0,   0,   0,    14,   6,    0,  0, 0];
-        this.enemyUnlockAt = [0,    0,  0,  0,    0, 0, 0, 0, 10000, 0, 0, 0, 0];
+        // ---- enemies: addEnemy(type, weight = how common, unlockAt = ms into the floor)
+        this.addEnemy(T_TURTLE, 22);
+        this.addEnemy(T_BAT, 25);
+        this.addEnemy(T_GOBLIN, 15);
+        this.addEnemy(T_OGRE, 8);
+        this.addEnemy(T_ICE_GOLEM, 14, 10000);
+        this.addEnemy(T_ICE_SHARD, 6);
         // ---- boss
         this.bossSpawnTime = 12000;
     }

@@ -21,9 +21,13 @@ class ForestLevel extends Level {
         this.wallTopColor = 6;
         this.wallLineColor = 7;
         this.wallFaceColor = 14;
-        // ---- enemies:       turtle bat gob ogre skel king wolf spore golem shard imp magma slime
-        this.enemyWeights =  [25,   25, 15, 8,   0,   0,   18,  9,    0,    0,    0,  0, 0];
-        this.enemyUnlockAt = [0,    0,  0,  10000, 0, 0, 0, 15000, 0, 0, 0, 0, 0];
+        // ---- enemies: addEnemy(type, weight = how common, unlockAt = ms into the floor)
+        this.addEnemy(T_TURTLE, 25);
+        this.addEnemy(T_BAT, 25);
+        this.addEnemy(T_GOBLIN, 15);
+        this.addEnemy(T_OGRE, 8, 10000);
+        this.addEnemy(T_WOLF, 18);
+        this.addEnemy(T_SPORE_POD, 9, 15000);
         // ---- boss
         this.bossSpawnTime = 12000;
     }
