@@ -19,9 +19,9 @@ class VolcanoLevel extends Level {
         this.wallTopColor = 4;
         this.wallLineColor = 15;
         this.wallFaceColor = 2;
-        // ---- enemies:       slime bat goblin ogre
-        this.enemyWeights =  [25,   35, 25,    15];
-        this.enemyUnlockAt = [0,    0,  0,     0];
+        // ---- enemies:       slime bat gob ogre skel king wolf spore golem shard imp magma
+        this.enemyWeights =  [18,   25, 15, 12,  0,   0,   0,   0,    0,    0,    15, 15];
+        this.enemyUnlockAt = [0,    0,  0,  0,    0, 0, 0, 0, 0, 0, 0, 0];
         // ---- boss
         this.bossSpawnTime = 12000;
     }
