@@ -1,6 +1,7 @@
 class DungeonLevel extends Level {
     constructor(floor: number) {
         super("Dungeon", floor);
+        this.song = SONG_DUNGEON; // "Crypt Crawl" (Music.ts)
         // ---- world generation: rolled fresh every time the floor starts ----
         // randomly generated rooms (WorldGen/RoomShapes.ts), joined by corridors
         this.layouts = [LevelLayout.RoomDungeon];

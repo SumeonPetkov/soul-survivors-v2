@@ -191,6 +191,9 @@ abstract class Level {
     /** Runs once after the map is built and the hero is placed. */
     onStart(): void { }
 
+    /** Background music for this level (a SONG_ constant from Music.ts); "" = keep what's playing. */
+    song = "";
+
     /** Runs every frame while the floor is being played. */
     update(dt: number): void { }
 

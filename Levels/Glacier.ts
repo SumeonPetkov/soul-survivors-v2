@@ -1,6 +1,7 @@
 class GlacierLevel extends Level {
     constructor(floor: number) {
         super("Glacier", floor);
+        this.song = SONG_GLACIER; // "Frozen Depths" (Music.ts)
         // ---- world generation: rolled fresh every time the floor starts ----
         this.widthRange = [34, 40];
         this.heightRange = [34, 40];
