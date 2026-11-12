@@ -22,9 +22,9 @@ class ForestLevel extends Level {
         this.wallTopColor = 6;
         this.wallLineColor = 7;
         this.wallFaceColor = 14;
-        // ---- enemies:       slime bat goblin ogre
-        this.enemyWeights =  [32,   38, 20,    10];
-        this.enemyUnlockAt = [0,    0,  0,     10000];
+        // ---- enemies:       slime bat gob ogre skel king wolf spore golem shard imp magma
+        this.enemyWeights =  [25,   25, 15, 8,   0,   0,   18,  9,    0,    0,    0,  0];
+        this.enemyUnlockAt = [0,    0,  0,  10000, 0, 0, 0, 15000, 0, 0, 0, 0];
         // ---- boss
         this.bossSpawnTime = 12000;
     }

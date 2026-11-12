@@ -1,6 +1,34 @@
 class NapoleonCharacter extends HeroCharacter implements ICharacterWithAbility {
-    private musketBall = makeBall(1, 15, 11);
-    private shell = makeBall(3, 15, 2);
+    // lead musket ball: dark outline, grey body, white shine
+    private musketBall = img`
+        . f f f .
+        f b 1 b f
+        f b b c f
+        f c c c f
+        . f f f .
+    `;
+    // starburst shown at the barrel when the volley fires
+    private muzzleFlash = img`
+        . . . 5 . . .
+        . 5 . 4 . 5 .
+        . . 4 5 4 . .
+        5 4 5 1 5 4 5
+        . . 4 5 4 . .
+        . 5 . 4 . 5 .
+        . . . 5 . . .
+    `;
+    // iron cannon shell with a lit fuse, drawn just before each explosion
+    private shell = img`
+        . . . . . . . 5 .
+        . . . . . . 4 . 5
+        . . . f f f e . .
+        . . f b 1 c c f .
+        . f b 1 c c c c f
+        . f c c c c c c f
+        . f c c c c c c f
+        . . f c c c c f .
+        . . . f f f f . .
+    `;
     // cannonade: shells still to land, and when the next one lands
     private shellsLeft = 0;
     private nextShellAt = 0;
@@ -14,8 +42,12 @@ class NapoleonCharacter extends HeroCharacter implements ICharacterWithAbility {
     }
 
     attack(target: Sprite): void {
-        // a line of muskets firing together          count spread jitter speed dmg life
-        this.shootSpread(this.musketBall, this.aimAt(target), 3, 0.3, 0.04, 160, 2, 800);
+        const a = this.aimAt(target);
+        // a line of muskets firing together count spread jitter speed dmg life
+        this.shootSpread(this.musketBall, a, 3, 0.3, 0.04, 160, 2, 800);
+        // flash at the barrel, then a puff of powder smoke
+        fx(this.muzzleFlash, this.x + Math.cos(a) * 9, this.y + Math.sin(a) * 9, 80);
+        fx(PUFF_IMG, this.x + Math.cos(a) * 13, this.y + Math.sin(a) * 13, 160);
     }
 
     useAbility(): void {

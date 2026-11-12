@@ -41,6 +41,7 @@
         "Fog.ts",
         "RoomClear.ts",
         "Minimap.ts",
+        "Enemies.ts",
         "main.ts"
     ],
     "testFiles": [

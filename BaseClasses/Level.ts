@@ -132,10 +132,10 @@ abstract class Level {
     wallLineColor = 12;
     wallFaceColor = 14;
 
-    // ================= ENEMIES (0 slime, 1 bat, 2 goblin shooter, 3 ogre) =================
-    enemyWeights = [32, 38, 20, 10];
+    // ================= ENEMIES (types: T_ constants in Enemies.ts, one entry per type) =================
+    enemyWeights = [32, 38, 20, 10, 0, 0, 0, 0, 0, 0, 0, 0];
     /** ms into the floor before each type starts appearing. */
-    enemyUnlockAt = [0, 0, 20000, 45000];
+    enemyUnlockAt = [0, 0, 20000, 45000, 0, 0, 0, 0, 0, 0, 0, 0];
     firstSpawnDelay = 1500;
     /** ms between spawn waves at the start; it shrinks over time and per floor. */
     spawnInterval = 1000;
@@ -147,7 +147,7 @@ abstract class Level {
     swarmSize = 14;
 
     // ================= MINIBOSSES (drop a chest with an item) =================
-    /** Enemy type used for minibosses (0 slime, 1 bat, 2 goblin, 3 ogre). */
+    /** Enemy type used for minibosses (a T_ constant from Enemies.ts). */
     miniBossEnemy = 3;
     miniBossHpMult = 8;
     /** Size multiplier of the sprite. */
