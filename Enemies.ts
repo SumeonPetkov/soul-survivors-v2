@@ -6,35 +6,36 @@
 //   3. Special behaviour: on-death effects go in the E_SPLIT / E_DEATH_SHOTS / E_REVIVES
 //      arrays; movement and attacks (charging, shooting) are in the enemy AI in main.ts.
 
-const T_SLIME = 0
+const T_TURTLE = 0      // slow and tanky
 const T_BAT = 1
-const T_GOBLIN = 2      // shooter, backs away when close
+const T_GOBLIN = 2      // pistol shooter, backs away when close
 const T_OGRE = 3
 const T_SKELETON = 4    // Dungeon: gets back up once after being killed
-const T_SLIME_KING = 5  // Dungeon: splits into 3 slimes
+const T_SLIME_KING = 5  // Dungeon: splits into 3 small slimes
 const T_WOLF = 6        // Forest: charges at the hero
 const T_SPORE_POD = 7   // Forest: bursts into spores when killed
 const T_ICE_GOLEM = 8   // Glacier: shatters into 2 ice shards
 const T_ICE_SHARD = 9   // Glacier: only spawned by golems
 const T_FIRE_IMP = 10   // Volcano: flying shooter, 3-shot spread
 const T_MAGMA_SLIME = 11 // Volcano: bursts into fire shots when killed
+const T_SLIME = 12      // small slime, only spawned by the Slime King
 
-//                slime bat gob ogre skel king wolf spore golem shard imp magma
-const E_HP =     [3,    2,  4,  14,  5,   16,  6,   6,    20,   2,    4,  6]
-const E_SPD =    [26,   46, 20, 16,  24,  14,  30,  10,   12,   44,   30, 22]
-const E_DMG =    [1,    1,  1,  2,   1,   2,   1,   1,    2,    1,    1,  1]
-const E_XP =     [1,    1,  2,  5,   1,   5,   3,   2,    5,    1,    3,  2]
+//                turtle bat gob ogre skel king wolf spore golem shard imp magma slime
+const E_HP =     [8,     2,  6,  14,  5,   16,  6,   6,    20,   2,    4,  6,    2]
+const E_SPD =    [16,    46, 20, 16,  24,  14,  30,  10,   12,   44,   30, 22,   32]
+const E_DMG =    [1,     1,  1,  2,   1,   2,   1,   1,    2,    1,    1,  1,    1]
+const E_XP =     [2,     1,  2,  5,   1,   5,   3,   2,    5,    1,    3,  2,    1]
 // flyers pass over walls; everything else is blocked by them and pathfinds around
-const E_FLY =    [false, true, false, false, false, false, false, false, false, false, true, false]
+const E_FLY =    [false, true, false, false, false, false, false, false, false, false, true, false, false]
 
 // ---- on death ----
 // split: spawn E_SPLIT_COUNT enemies of type E_SPLIT_INTO (-1 = none)
-const E_SPLIT_INTO =  [-1, -1, -1, -1, -1, T_SLIME, -1, -1, T_ICE_SHARD, -1, -1, -1]
-const E_SPLIT_COUNT = [0,  0,  0,  0,  0,  3,       0,  0,  2,           0,  0,  0]
+const E_SPLIT_INTO =  [-1, -1, -1, -1, -1, T_SLIME, -1, -1, T_ICE_SHARD, -1, -1, -1, -1]
+const E_SPLIT_COUNT = [0,  0,  0,  0,  0,  3,       0,  0,  2,           0,  0,  0,  0]
 // burst into this many enemy shots in a ring
-const E_DEATH_SHOTS = [0,  0,  0,  0,  0,  0,       0,  6,  0,           0,  0,  4]
+const E_DEATH_SHOTS = [0,  0,  0,  0,  0,  0,       0,  6,  0,           0,  0,  4,  0]
 // comes back once (half HP, stunned for a moment)
-const E_REVIVES =     [false, false, false, false, true, false, false, false, false, false, false, false]
+const E_REVIVES =     [false, false, false, false, true, false, false, false, false, false, false, false, false]
 
 const ENEMY_SPRITES: { [name: string]: Image } = {
     skeleton: img`
@@ -148,9 +149,11 @@ const ENEMY_SPRITES: { [name: string]: Image } = {
 }
 
 const E_IMG: Image[] = [
-    getImage("slime"), getImage("bat"), getImage("goblin"), getImage("ogre"),
+    // editor sprites have empty borders; trimming them keeps hitboxes tight
+    trimImage(getImage("turtle")), getImage("bat"), trimImage(getImage("goblin")), getImage("ogre"),
     ENEMY_SPRITES["skeleton"], ENEMY_SPRITES["slimeKing"], ENEMY_SPRITES["wolf"], ENEMY_SPRITES["sporePod"],
     ENEMY_SPRITES["iceGolem"], ENEMY_SPRITES["iceShard"], ENEMY_SPRITES["fireImp"], ENEMY_SPRITES["magmaSlime"],
+    trimImage(getImage("slime")),
 ]
 
 /** Shooting enemies keep their distance and fire at the hero. */

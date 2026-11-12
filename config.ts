@@ -6,7 +6,7 @@
 const DEV_MODE = true
 // Floor a run starts on while DEV_MODE is on (released builds always start on floor 1).
 // e.g. 10 = straight to the final arena to test the boss.
-const DEV_START_FLOOR = 10
+const DEV_START_FLOOR = 1
 
 namespace userconfig {
     export const ARCADE_SCREEN_WIDTH = 320

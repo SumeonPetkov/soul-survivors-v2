@@ -135,9 +135,9 @@ abstract class Level {
     wallFaceColor = 14;
 
     // ================= ENEMIES (types: T_ constants in Enemies.ts, one entry per type) =================
-    enemyWeights = [32, 38, 20, 10, 0, 0, 0, 0, 0, 0, 0, 0];
+    enemyWeights = [32, 38, 20, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** ms into the floor before each type starts appearing. */
-    enemyUnlockAt = [0, 0, 20000, 45000, 0, 0, 0, 0, 0, 0, 0, 0];
+    enemyUnlockAt = [0, 0, 20000, 45000, 0, 0, 0, 0, 0, 0, 0, 0, 0];
     /** false = no timed waves or swarms; enemies only come from the boss (or rooms). */
     randomSpawns = true;
     firstSpawnDelay = 1500;
